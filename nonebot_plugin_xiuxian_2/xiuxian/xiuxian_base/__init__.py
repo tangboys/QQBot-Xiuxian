@@ -336,18 +336,20 @@ async def restart_(bot: Bot, event: GroupMessageEvent, state: T_State):
 
 @restart.receive()
 async def handle_user_choice(bot: Bot, event: GroupMessageEvent, state: T_State):
+    """处理重入仙途的会话续答；非法或越界编号统一使用已有最佳灵根回退。"""
     user_choice = event.get_plaintext().strip()
     linggen_options = state["linggen_options"]
     user_id = state["user_id"]  # 从状态中获取用户ID
     selected_name, selected_root_type = max(linggen_options, key=lambda x: jsondata.root_data()[x[1]]["type_speeds"])
 
-    if user_choice.isdigit(): # 判断数字
-        user_choice = int(user_choice)
-        if 1 <= user_choice <= 10:
-            selected_name, selected_root_type = linggen_options[user_choice - 1]
-            msg = f"你选择了 {selected_name} 呢！\n"
-    else:
-        msg = "输入有误，帮你自动选择最佳灵根了嗷！\n"
+    msg = "输入有误，帮你自动选择最佳灵根了嗷！\n"
+    try:
+        choice = int(user_choice)
+    except ValueError:
+        choice = 0
+    if 1 <= choice <= min(10, len(linggen_options)):
+        selected_name, selected_root_type = linggen_options[choice - 1]
+        msg = f"你选择了 {selected_name} 呢！\n"
 
     msg += sql_message.ramaker(selected_name, selected_root_type, user_id)
 

@@ -26,7 +26,8 @@ limit_num = 99999
 
 @auto_recover_hp.scheduled_job('interval', minutes=1)
 def auto_recover_hp_():
-    sql_message.auto_recover_hp
+    """按已有修复速率执行回血，而不是仅获取方法对象。"""
+    sql_message.auto_recover_hp()
 
 @limit_all_message.scheduled_job('interval', minutes=1)
 def limit_all_message_():

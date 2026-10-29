@@ -9,6 +9,7 @@ from pathlib import Path
 
 
 async def download_url(url: str) -> bytes:
+    """限时下载头像，重试间等待但末次失败后立即交给回退逻辑。"""
     async with httpx.AsyncClient() as client:
         for i in range(3):
             try:
@@ -17,20 +18,23 @@ async def download_url(url: str) -> bytes:
                 return resp.content
             except Exception as e:
                 logger.opt(colors=True).warning(f"<red>下载错误 {url}, 重试 {i}/3: {e}</red>")
-                await asyncio.sleep(3)
+                if i < 2:
+                    await asyncio.sleep(3)
     raise Exception(f"{url} 下载失败！")
 
 
 async def download_avatar(user_id: str) -> bytes:
-    url = f"http://q1.qlogo.cn/g?b=qq&nk={user_id}&s=640"
+    """通过 HTTPS 获取头像并兼容默认头像尺寸回退。"""
+    url = f"https://q1.qlogo.cn/g?b=qq&nk={user_id}&s=640"
     data = await download_url(url)
     if hashlib.md5(data).hexdigest() == "acef72340ac0e914090bd35799f5594e":
-        url = f"http://q1.qlogo.cn/g?b=qq&nk={user_id}&s=100"
+        url = f"https://q1.qlogo.cn/g?b=qq&nk={user_id}&s=100"
         data = await download_url(url)
     return data
 
 
 async def get_avatar_by_user_id_and_save(user_id):
+    """缓存头像，并以可重复创建目录处理并发首次下载。"""
     user_id = str(user_id)
     PLAYERSDATA = Path() / "data" / "xiuxian" / "players"
     USER_AVATAR_PATH = PLAYERSDATA / user_id / 'AVATAR.png'
@@ -45,7 +49,7 @@ async def get_avatar_by_user_id_and_save(user_id):
             image_bytes = await download_avatar(user_id)
             im = Image.open(io.BytesIO(image_bytes)).resize((280, 280)).convert("RGBA")
             if not os.path.exists(PLAYERSDATA / user_id):
-                os.makedirs(PLAYERSDATA / user_id)
+                os.makedirs(PLAYERSDATA / user_id, exist_ok=True)
             im.save(USER_AVATAR_PATH, "PNG")
     except Exception as e:
         logger.opt(colors=True).error(f"<red>获取头像出错,{e}</red>")

@@ -1,3 +1,10 @@
+﻿# QQBot 修仙适配分支
+
+本分支为 QQBot .NET 8 的完整引擎适配。使用、数据路径、离线依赖、构建和验证见 [QQBot 使用说明](qqbot/README-QQBOT.md)；完整玩法清单和修复边界见 [源码审查](qqbot/audit/REVIEW.md)，许可与素材来源见 [SOURCE-NOTICES](SOURCE-NOTICES.md)。
+
+基于上游固定提交128e31643b224350f1f0ce31f210553fd34334c1。C#插件管理原Python游戏进程，原16业务模块128匹配器14调度保留；运行、功能、图片和性能验收由使用者完成。以下保留原版安装与玩法说明，QQBot用户应使用上方适配说明。
+
+---
 <div align="center">
   <br>
 </div>

@@ -392,7 +392,7 @@ class Txt2Img:
             return self.img2b64(out_img)
 
     def save_image_with_compression(self, out_img):
-        """对传入图片进行压缩"""
+        """对传入图片进行压缩；编码失败时清空缓冲区后降级。"""
         img_byte_arr = io.BytesIO()
         compression_quality = max(
             1, min(100, 100 - XiuConfig().img_compression_limit)
@@ -414,6 +414,8 @@ class Txt2Img:
                 out_img.save(img_byte_arr, format="WebP", quality=compression_quality)
         except:
             # 尝试降级为 JPEG
+            img_byte_arr.seek(0)
+            img_byte_arr.truncate(0)
             out_img.save(img_byte_arr, format="JPEG", quality=compression_quality)
 
         img_byte_arr.seek(0)

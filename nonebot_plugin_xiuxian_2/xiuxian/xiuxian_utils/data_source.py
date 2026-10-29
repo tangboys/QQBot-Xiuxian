@@ -15,6 +15,7 @@ class JsonDate:
         self.root_jsonpath = DATABASE / "灵根.json"
         self.level_rate_jsonpath = DATABASE / "突破概率.json"
         self.level_jsonpath = DATABASE / "境界.json"
+        self.exercises_level_jsonpath = DATABASE / "炼体境界.json"
         self.sect_json_pth = DATABASE / "宗门玩法配置.json"
         self.BACKGROUND_FILE = DATABASE / "image" / "background.png"
         self.BOSS_IMG = DATABASE / "boss_img" 

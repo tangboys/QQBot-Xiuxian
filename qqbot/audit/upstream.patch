@@ -1,0 +1,601 @@
+diff --git a/nonebot_plugin_xiuxian_2/__init__.py b/nonebot_plugin_xiuxian_2/__init__.py
+index 14f865b..80f820e 100755
+--- a/nonebot_plugin_xiuxian_2/__init__.py
++++ b/nonebot_plugin_xiuxian_2/__init__.py
+@@ -1,6 +1,14 @@
+-from pathlib import Path
+-from nonebot import require, load_plugins
++from nonebot import require, load_plugin
+ 
+-dir_ = Path(__file__).parent
++# 显式加载主包与全部业务包，加载失败立即停止，避免静默缺少玩法。
+ require('nonebot_plugin_apscheduler')
+-load_plugins(str(dir_ / "xiuxian"))
+\ No newline at end of file
++if load_plugin(__name__ + ".xiuxian") is None:
++    raise RuntimeError("修仙主包加载失败")
++for module in (
++    "xiuxian_back", "xiuxian_bank", "xiuxian_base", "xiuxian_beg",
++    "xiuxian_boss", "xiuxian_buff", "xiuxian_dufang", "xiuxian_fusion",
++    "xiuxian_impart", "xiuxian_impart_pk", "xiuxian_info", "xiuxian_lunhui",
++    "xiuxian_mixelixir", "xiuxian_rift", "xiuxian_sect", "xiuxian_work",
++):
++    if load_plugin(__name__ + ".xiuxian." + module) is None:
++        raise RuntimeError("修仙业务包加载失败：" + module)
+diff --git a/nonebot_plugin_xiuxian_2/xiuxian/xiuxian_back/back_util.py b/nonebot_plugin_xiuxian_2/xiuxian/xiuxian_back/back_util.py
+index 4d48b25..ac8e731 100755
+--- a/nonebot_plugin_xiuxian_2/xiuxian/xiuxian_back/back_util.py
++++ b/nonebot_plugin_xiuxian_2/xiuxian/xiuxian_back/back_util.py
+@@ -12,7 +12,7 @@ from ..xiuxian_utils.xiuxian2_handle import (
+ )
+ from datetime import datetime
+ import os
+-from pathlib import Path
++from ..xiuxian_utils.state_paths import persistent_directory
+ from ..xiuxian_config import convert_rank
+ 
+ items = Items()
+@@ -614,7 +614,7 @@ def get_shop_data(group_id):
+     return data
+ 
+ 
+-PATH = Path(__file__).parent
++PATH = persistent_directory(__file__)
+ FILEPATH = PATH / 'shop.json'
+ 
+ 
+diff --git a/nonebot_plugin_xiuxian_2/xiuxian/xiuxian_back/backconfig.py b/nonebot_plugin_xiuxian_2/xiuxian/xiuxian_back/backconfig.py
+index 82d7e02..1f17409 100755
+--- a/nonebot_plugin_xiuxian_2/xiuxian/xiuxian_back/backconfig.py
++++ b/nonebot_plugin_xiuxian_2/xiuxian/xiuxian_back/backconfig.py
+@@ -3,7 +3,7 @@ try:
+ except ImportError:
+     import json
+ import os
+-from pathlib import Path
++from ..xiuxian_utils.state_paths import persistent_directory
+ 
+ configkey = ["open", "auctions", "拍卖会定时参数"]
+ CONFIG = {
+@@ -189,7 +189,7 @@ def get_auction_config():
+     return config
+ 
+ 
+-CONFIGJSONPATH = Path(__file__).parent
++CONFIGJSONPATH = persistent_directory(__file__)
+ FILEPATH = CONFIGJSONPATH / 'config.json'
+ 
+ 
+diff --git a/nonebot_plugin_xiuxian_2/xiuxian/xiuxian_bank/bankconfig.py b/nonebot_plugin_xiuxian_2/xiuxian/xiuxian_bank/bankconfig.py
+index 43303c5..12edb98 100755
+--- a/nonebot_plugin_xiuxian_2/xiuxian/xiuxian_bank/bankconfig.py
++++ b/nonebot_plugin_xiuxian_2/xiuxian/xiuxian_bank/bankconfig.py
+@@ -3,7 +3,7 @@ try:
+ except ImportError:
+     import json
+ import os
+-from pathlib import Path
++from ..xiuxian_utils.state_paths import persistent_directory
+ 
+ configkey = ["BANKLEVEL"]
+ CONFIG = {
+@@ -33,7 +33,7 @@ def get_config():
+     return config
+ 
+ 
+-CONFIGJSONPATH = Path(__file__).parent
++CONFIGJSONPATH = persistent_directory(__file__)
+ FILEPATH = CONFIGJSONPATH / 'config.json'
+ 
+ 
+diff --git a/nonebot_plugin_xiuxian_2/xiuxian/xiuxian_base/__init__.py b/nonebot_plugin_xiuxian_2/xiuxian/xiuxian_base/__init__.py
+index c9bb416..f1e2efc 100755
+--- a/nonebot_plugin_xiuxian_2/xiuxian/xiuxian_base/__init__.py
++++ b/nonebot_plugin_xiuxian_2/xiuxian/xiuxian_base/__init__.py
+@@ -336,18 +336,20 @@ async def restart_(bot: Bot, event: GroupMessageEvent, state: T_State):
+ 
+ @restart.receive()
+ async def handle_user_choice(bot: Bot, event: GroupMessageEvent, state: T_State):
++    """处理重入仙途的会话续答；非法或越界编号统一使用已有最佳灵根回退。"""
+     user_choice = event.get_plaintext().strip()
+     linggen_options = state["linggen_options"]
+     user_id = state["user_id"]  # 从状态中获取用户ID
+     selected_name, selected_root_type = max(linggen_options, key=lambda x: jsondata.root_data()[x[1]]["type_speeds"])
+ 
+-    if user_choice.isdigit(): # 判断数字
+-        user_choice = int(user_choice)
+-        if 1 <= user_choice <= 10:
+-            selected_name, selected_root_type = linggen_options[user_choice - 1]
+-            msg = f"你选择了 {selected_name} 呢！\n"
+-    else:
+-        msg = "输入有误，帮你自动选择最佳灵根了嗷！\n"
++    msg = "输入有误，帮你自动选择最佳灵根了嗷！\n"
++    try:
++        choice = int(user_choice)
++    except ValueError:
++        choice = 0
++    if 1 <= choice <= min(10, len(linggen_options)):
++        selected_name, selected_root_type = linggen_options[choice - 1]
++        msg = f"你选择了 {selected_name} 呢！\n"
+ 
+     msg += sql_message.ramaker(selected_name, selected_root_type, user_id)
+ 
+@@ -1648,4 +1650,4 @@ async def xiuxian_updata_level_(bot: Bot, event: GroupMessageEvent):
+         await bot.send_group_msg(group_id=int(send_group_id), message=MessageSegment.image(pic))
+     else:
+         await bot.send_group_msg(group_id=int(send_group_id), message=msg)
+-    await xiuxian_updata_level.finish()
+\ No newline at end of file
++    await xiuxian_updata_level.finish()
+diff --git a/nonebot_plugin_xiuxian_2/xiuxian/xiuxian_boss/__init__.py b/nonebot_plugin_xiuxian_2/xiuxian/xiuxian_boss/__init__.py
+index 0d2884d..39101da 100755
+--- a/nonebot_plugin_xiuxian_2/xiuxian/xiuxian_boss/__init__.py
++++ b/nonebot_plugin_xiuxian_2/xiuxian/xiuxian_boss/__init__.py
+@@ -140,6 +140,7 @@ async def set_boss_():
+ 
+ 
+ async def send_bot(group_id:str):
++    """生成并发送群 Boss，发送失败时检查兜底机器人的群列表。"""
+     #初始化
+     if not group_id in group_boss:
+         group_boss[group_id] = []
+@@ -181,7 +182,10 @@ async def send_bot(group_id:str):
+             await get_bots()[put_bot[0]].call_api(api, **data)
+             
+     except:
+-        if group_id not in bot.get_group_list():
++        # 获取兜底机器人并等待群列表，按返回字典中的群号匹配。
++        bot = get_bot()
++        groups = await bot.get_group_list()
++        if int(group_id) not in {int(group["group_id"]) for group in groups}:
+             logger.opt(colors=True).warning(f"<red>群{group_id}不存在,请检查配置文件!</red>")
+             return
+         else:
+diff --git a/nonebot_plugin_xiuxian_2/xiuxian/xiuxian_boss/bossconfig.py b/nonebot_plugin_xiuxian_2/xiuxian/xiuxian_boss/bossconfig.py
+index 4f43d40..c7666b5 100755
+--- a/nonebot_plugin_xiuxian_2/xiuxian/xiuxian_boss/bossconfig.py
++++ b/nonebot_plugin_xiuxian_2/xiuxian/xiuxian_boss/bossconfig.py
+@@ -3,7 +3,7 @@ try:
+ except ImportError:
+     import json
+ import os
+-from pathlib import Path
++from ..xiuxian_utils.state_paths import persistent_directory
+ 
+ configkey = ["Boss灵石", "Boss名字", "Boss倍率", "Boss个数上限", "Boss生成时间参数", 'open', "世界积分商品"]
+ CONFIG = {
+@@ -163,7 +163,7 @@ def get_boss_config():
+     return config
+ 
+ 
+-CONFIGJSONPATH = Path(__file__).parent
++CONFIGJSONPATH = persistent_directory(__file__)
+ FILEPATH = CONFIGJSONPATH / 'config.json'
+ 
+ 
+diff --git a/nonebot_plugin_xiuxian_2/xiuxian/xiuxian_boss/old_boss_info.py b/nonebot_plugin_xiuxian_2/xiuxian/xiuxian_boss/old_boss_info.py
+index 3837aec..d1b643e 100755
+--- a/nonebot_plugin_xiuxian_2/xiuxian/xiuxian_boss/old_boss_info.py
++++ b/nonebot_plugin_xiuxian_2/xiuxian/xiuxian_boss/old_boss_info.py
+@@ -2,18 +2,19 @@ try:
+     import ujson as json
+ except ImportError:
+     import json
+-from pathlib import Path
++from ..xiuxian_utils.state_paths import persistent_directory
+ import os
+ 
+ 
+ class OLD_BOSS_INFO(object):
+     def __init__(self):
+-        self.dir_path = Path(__file__).parent
++        """从持久目录读取或初始化玩法状态，保留升级前数据。"""
++        self.dir_path = persistent_directory(__file__)
+         self.data_path = os.path.join(self.dir_path, "boss_info.json")
+         try:
+             with open(self.data_path, 'r', encoding='utf-8') as f:
+                 self.data = json.load(f)
+-        except:
++        except FileNotFoundError:
+             self.info = {}
+             data = json.dumps(self.info, ensure_ascii=False, indent=4)
+             with open(self.data_path, mode="x", encoding="UTF-8") as f:
+diff --git a/nonebot_plugin_xiuxian_2/xiuxian/xiuxian_buff/two_exp_cd.py b/nonebot_plugin_xiuxian_2/xiuxian/xiuxian_buff/two_exp_cd.py
+index 04ea932..ad25027 100755
+--- a/nonebot_plugin_xiuxian_2/xiuxian/xiuxian_buff/two_exp_cd.py
++++ b/nonebot_plugin_xiuxian_2/xiuxian/xiuxian_buff/two_exp_cd.py
+@@ -2,18 +2,19 @@ try:
+     import ujson as json
+ except ImportError:
+     import json
+-from pathlib import Path
++from ..xiuxian_utils.state_paths import persistent_directory
+ import os
+ 
+ 
+ class TWO_EXP_CD(object):
+     def __init__(self):
+-        self.dir_path = Path(__file__).parent
++        """从持久目录读取或初始化玩法状态，保留升级前数据。"""
++        self.dir_path = persistent_directory(__file__)
+         self.data_path = os.path.join(self.dir_path, "two_exp_cd.json")
+         try:
+             with open(self.data_path, 'r', encoding='utf-8') as f:
+                 self.data = json.load(f)
+-        except:
++        except FileNotFoundError:
+             self.info = {"two_exp_cd": {}}
+             data = json.dumps(self.info, ensure_ascii=False, indent=4)
+             with open(self.data_path, mode="x", encoding="UTF-8") as f:
+diff --git a/nonebot_plugin_xiuxian_2/xiuxian/xiuxian_impart_pk/impart_pk.py b/nonebot_plugin_xiuxian_2/xiuxian/xiuxian_impart_pk/impart_pk.py
+index ece3f3a..7191b1e 100755
+--- a/nonebot_plugin_xiuxian_2/xiuxian/xiuxian_impart_pk/impart_pk.py
++++ b/nonebot_plugin_xiuxian_2/xiuxian/xiuxian_impart_pk/impart_pk.py
+@@ -2,18 +2,19 @@ try:
+     import ujson as json
+ except ImportError:
+     import json
+-from pathlib import Path
++from ..xiuxian_utils.state_paths import persistent_directory
+ import os
+ 
+ 
+ class IMPART_PK(object):
+     def __init__(self):
+-        self.dir_path = Path(__file__).parent
++        """从持久目录读取或初始化玩法状态，保留升级前数据。"""
++        self.dir_path = persistent_directory(__file__)
+         self.data_path = os.path.join(self.dir_path, "impart_pk.json")
+         try:
+             with open(self.data_path, 'r', encoding='utf-8') as f:
+                 self.data = json.load(f)
+-        except:
++        except FileNotFoundError:
+             self.info = {}
+             data = json.dumps(self.info, ensure_ascii=False, indent=4)
+             with open(self.data_path, mode="x", encoding="UTF-8") as f:
+diff --git a/nonebot_plugin_xiuxian_2/xiuxian/xiuxian_impart_pk/xu_world.py b/nonebot_plugin_xiuxian_2/xiuxian/xiuxian_impart_pk/xu_world.py
+index 3f88af6..4fc1c11 100755
+--- a/nonebot_plugin_xiuxian_2/xiuxian/xiuxian_impart_pk/xu_world.py
++++ b/nonebot_plugin_xiuxian_2/xiuxian/xiuxian_impart_pk/xu_world.py
+@@ -2,18 +2,19 @@ try:
+     import ujson as json
+ except ImportError:
+     import json
+-from pathlib import Path
++from ..xiuxian_utils.state_paths import persistent_directory
+ import os
+ 
+ 
+ class XU_WORLD(object):
+     def __init__(self):
+-        self.dir_path = Path(__file__).parent
++        """从持久目录读取或初始化玩法状态，保留升级前数据。"""
++        self.dir_path = persistent_directory(__file__)
+         self.data_path = os.path.join(self.dir_path, "x_world.json")
+         try:
+             with open(self.data_path, 'r', encoding='utf-8') as f:
+                 self.data = json.load(f)
+-        except:
++        except FileNotFoundError:
+             self.info = {}
+             data = json.dumps(self.info, ensure_ascii=False, indent=4)
+             with open(self.data_path, mode="x", encoding="UTF-8") as f:
+diff --git a/nonebot_plugin_xiuxian_2/xiuxian/xiuxian_info/download.py b/nonebot_plugin_xiuxian_2/xiuxian/xiuxian_info/download.py
+index a8392ac..354212f 100755
+--- a/nonebot_plugin_xiuxian_2/xiuxian/xiuxian_info/download.py
++++ b/nonebot_plugin_xiuxian_2/xiuxian/xiuxian_info/download.py
+@@ -9,6 +9,7 @@ from pathlib import Path
+ 
+ 
+ async def download_url(url: str) -> bytes:
++    """限时下载头像，重试间等待但末次失败后立即交给回退逻辑。"""
+     async with httpx.AsyncClient() as client:
+         for i in range(3):
+             try:
+@@ -17,20 +18,23 @@ async def download_url(url: str) -> bytes:
+                 return resp.content
+             except Exception as e:
+                 logger.opt(colors=True).warning(f"<red>下载错误 {url}, 重试 {i}/3: {e}</red>")
+-                await asyncio.sleep(3)
++                if i < 2:
++                    await asyncio.sleep(3)
+     raise Exception(f"{url} 下载失败！")
+ 
+ 
+ async def download_avatar(user_id: str) -> bytes:
+-    url = f"http://q1.qlogo.cn/g?b=qq&nk={user_id}&s=640"
++    """通过 HTTPS 获取头像并兼容默认头像尺寸回退。"""
++    url = f"https://q1.qlogo.cn/g?b=qq&nk={user_id}&s=640"
+     data = await download_url(url)
+     if hashlib.md5(data).hexdigest() == "acef72340ac0e914090bd35799f5594e":
+-        url = f"http://q1.qlogo.cn/g?b=qq&nk={user_id}&s=100"
++        url = f"https://q1.qlogo.cn/g?b=qq&nk={user_id}&s=100"
+         data = await download_url(url)
+     return data
+ 
+ 
+ async def get_avatar_by_user_id_and_save(user_id):
++    """缓存头像，并以可重复创建目录处理并发首次下载。"""
+     user_id = str(user_id)
+     PLAYERSDATA = Path() / "data" / "xiuxian" / "players"
+     USER_AVATAR_PATH = PLAYERSDATA / user_id / 'AVATAR.png'
+@@ -45,7 +49,7 @@ async def get_avatar_by_user_id_and_save(user_id):
+             image_bytes = await download_avatar(user_id)
+             im = Image.open(io.BytesIO(image_bytes)).resize((280, 280)).convert("RGBA")
+             if not os.path.exists(PLAYERSDATA / user_id):
+-                os.makedirs(PLAYERSDATA / user_id)
++                os.makedirs(PLAYERSDATA / user_id, exist_ok=True)
+             im.save(USER_AVATAR_PATH, "PNG")
+     except Exception as e:
+         logger.opt(colors=True).error(f"<red>获取头像出错,{e}</red>")
+diff --git a/nonebot_plugin_xiuxian_2/xiuxian/xiuxian_rift/old_rift_info.py b/nonebot_plugin_xiuxian_2/xiuxian/xiuxian_rift/old_rift_info.py
+index 3ce0b41..be455b3 100755
+--- a/nonebot_plugin_xiuxian_2/xiuxian/xiuxian_rift/old_rift_info.py
++++ b/nonebot_plugin_xiuxian_2/xiuxian/xiuxian_rift/old_rift_info.py
+@@ -1,5 +1,5 @@
+ import json
+-from pathlib import Path
++from ..xiuxian_utils.state_paths import persistent_directory
+ import os
+ import datetime
+ from .riftmake import Rift
+@@ -7,12 +7,13 @@ from .riftmake import Rift
+ 
+ class OLD_RIFT_INFO(object):
+     def __init__(self):
+-        self.dir_path = Path(__file__).parent
++        """从持久目录读取或初始化玩法状态，保留升级前数据。"""
++        self.dir_path = persistent_directory(__file__)
+         self.data_path = os.path.join(self.dir_path, "rift_info.json")
+         try:
+             with open(self.data_path, 'r', encoding='utf-8') as f:
+                 self.data = json.load(f)
+-        except:
++        except FileNotFoundError:
+             self.info = {}
+             data = json.dumps(self.info, ensure_ascii=False, indent=4)
+             with open(self.data_path, mode="x", encoding="UTF-8") as f:
+diff --git a/nonebot_plugin_xiuxian_2/xiuxian/xiuxian_rift/riftconfig.py b/nonebot_plugin_xiuxian_2/xiuxian/xiuxian_rift/riftconfig.py
+index 9e79511..266c95d 100755
+--- a/nonebot_plugin_xiuxian_2/xiuxian/xiuxian_rift/riftconfig.py
++++ b/nonebot_plugin_xiuxian_2/xiuxian/xiuxian_rift/riftconfig.py
+@@ -3,7 +3,7 @@ try:
+ except ImportError:
+     import json
+ import os
+-from pathlib import Path
++from ..xiuxian_utils.state_paths import persistent_directory
+ 
+ configkey = ["open", "rift"]
+ CONFIG = {
+@@ -80,7 +80,7 @@ def get_rift_config():
+     return config
+ 
+ 
+-CONFIGJSONPATH = Path(__file__).parent
++CONFIGJSONPATH = persistent_directory(__file__)
+ FILEPATH = CONFIGJSONPATH / 'config.json'
+ 
+ 
+diff --git a/nonebot_plugin_xiuxian_2/xiuxian/xiuxian_sect/sectconfig.py b/nonebot_plugin_xiuxian_2/xiuxian/xiuxian_sect/sectconfig.py
+index 0439134..0cb78a4 100755
+--- a/nonebot_plugin_xiuxian_2/xiuxian/xiuxian_sect/sectconfig.py
++++ b/nonebot_plugin_xiuxian_2/xiuxian/xiuxian_sect/sectconfig.py
+@@ -3,7 +3,7 @@ try:
+ except ImportError:
+     import json
+ import os
+-from pathlib import Path
++from ..xiuxian_utils.state_paths import persistent_directory
+ 
+ 
+ configkey = [
+@@ -245,7 +245,7 @@ def get_config():
+     return config
+ 
+ 
+-CONFIGJSONPATH = Path(__file__).parent
++CONFIGJSONPATH = persistent_directory(__file__)
+ FILEPATH = CONFIGJSONPATH / 'config.json'
+ 
+ 
+diff --git a/nonebot_plugin_xiuxian_2/xiuxian/xiuxian_utils/data_source.py b/nonebot_plugin_xiuxian_2/xiuxian/xiuxian_utils/data_source.py
+index e0b9b82..8e9e58d 100755
+--- a/nonebot_plugin_xiuxian_2/xiuxian/xiuxian_utils/data_source.py
++++ b/nonebot_plugin_xiuxian_2/xiuxian/xiuxian_utils/data_source.py
+@@ -15,6 +15,7 @@ class JsonDate:
+         self.root_jsonpath = DATABASE / "灵根.json"
+         self.level_rate_jsonpath = DATABASE / "突破概率.json"
+         self.level_jsonpath = DATABASE / "境界.json"
++        self.exercises_level_jsonpath = DATABASE / "炼体境界.json"
+         self.sect_json_pth = DATABASE / "宗门玩法配置.json"
+         self.BACKGROUND_FILE = DATABASE / "image" / "background.png"
+         self.BOSS_IMG = DATABASE / "boss_img" 
+diff --git a/nonebot_plugin_xiuxian_2/xiuxian/xiuxian_utils/download_xiuxian_data.py b/nonebot_plugin_xiuxian_2/xiuxian/xiuxian_utils/download_xiuxian_data.py
+index 68549de..6c0f1e1 100755
+--- a/nonebot_plugin_xiuxian_2/xiuxian/xiuxian_utils/download_xiuxian_data.py
++++ b/nonebot_plugin_xiuxian_2/xiuxian/xiuxian_utils/download_xiuxian_data.py
+@@ -1,58 +1,16 @@
+-import os
+-import zipfile
+-import wget
+ from pathlib import Path
+ from nonebot.log import logger
+-from ..xiuxian_config import XiuConfig
+ 
+ 
+ def download_xiuxian_data():
+-    path_data = Path() / "data"
+-    zipPath = str(path_data / "xiuxian_data_temp.zip")  # 压缩包的绝对路径
+-    version = "xiuxian_version.txt"
+-    URL = "https://huggingface.co/xiaonana/xiuxian/resolve/main/xiuxian.zip"
+-
+-    def get_data():
+-        wget.download(URL, out=zipPath)  # 获取内容
+-
+-    def _main_():
+-        if not os.path.exists(path_data):
+-            os.makedirs(path_data)
+-        version_path = path_data / "xiuxian" / version
+-        data = None
+-        try:
+-            with open(version_path, 'r', encoding='utf-8') as f:
+-                data = f.read()
+-                f.close()
+-        except:
+-            pass
+-        if str(data) == str(XiuConfig().version):
+-            logger.opt(colors=True).info(f"<green>修仙配置校核完成！</green>")
+-        else:
+-            logger.opt(colors=True).info(f"<green>正在更新修仙配置文件，请等待！</green>")
+-            try:
+-                get_data()  # data为byte字节
+-                logger.opt(colors=True).info(f"<green>正在解压修仙配置文件！</green>")
+-                with zipfile.ZipFile(file=zipPath, mode='r') as zf:
+-                    for old_name in zf.namelist():
+-                        # 获取文件大小，目的是区分文件夹还是文件，如果是空文件应该不好用。
+-                        file_size = zf.getinfo(old_name).file_size
+-                        new_name = old_name.encode('cp437').decode('gbk')
+-                        new_path = os.path.join(path_data, new_name)
+-                        if file_size > 0:
+-                            with open(file=new_path, mode='wb') as f:
+-                                f.write(zf.read(old_name))
+-                                f.close()
+-                        else:
+-                            if not os.path.exists(new_path):
+-                                os.makedirs(new_path)
+-                zf.close()
+-            except Exception as e:
+-                logger.opt(colors=True).info(f"<red>修仙配置文件下载失败，原因{e}，一直失败请前往网址手动下载{URL}</red>")
+-            finally:
+-                try:
+-                    os.remove(zipPath)
+-                    logger.opt(colors=True).info(f"<red>原始压缩包已删除！</red>")
+-                except:
+-                    logger.opt(colors=True).info(f"<red>原始压缩包删除失败，请手动删除，路径{zipPath}!</red>")
+-    return _main_()
++    """检查随包提供的离线基础资源，缺失时报错而不下载或执行远程代码。"""
++    path_data = Path() / "data" / "xiuxian"
++    required = (
++        "灵根.json", "境界.json", "炼体境界.json", "突破概率.json",
++        "宗门玩法配置.json", "items.json", "image/background.png",
++        "image/banner.png", "font/SarasaMonoSC-Bold.ttf", "info_img/init.png",
++    )
++    missing = [name for name in required if not (path_data / name).is_file()]
++    if missing:
++        raise FileNotFoundError("修仙离线资源不完整，请修复安装包：" + "、".join(missing))
++    logger.info("修仙离线基础资源检查完成")
+diff --git a/nonebot_plugin_xiuxian_2/xiuxian/xiuxian_utils/lay_out.py b/nonebot_plugin_xiuxian_2/xiuxian/xiuxian_utils/lay_out.py
+index 4646a37..5cdad1a 100755
+--- a/nonebot_plugin_xiuxian_2/xiuxian/xiuxian_utils/lay_out.py
++++ b/nonebot_plugin_xiuxian_2/xiuxian/xiuxian_utils/lay_out.py
+@@ -26,7 +26,8 @@ limit_num = 99999
+ 
+ @auto_recover_hp.scheduled_job('interval', minutes=1)
+ def auto_recover_hp_():
+-    sql_message.auto_recover_hp
++    """按已有修复速率执行回血，而不是仅获取方法对象。"""
++    sql_message.auto_recover_hp()
+ 
+ @limit_all_message.scheduled_job('interval', minutes=1)
+ def limit_all_message_():
+diff --git a/nonebot_plugin_xiuxian_2/xiuxian/xiuxian_utils/utils.py b/nonebot_plugin_xiuxian_2/xiuxian/xiuxian_utils/utils.py
+index 652e536..f769ae4 100755
+--- a/nonebot_plugin_xiuxian_2/xiuxian/xiuxian_utils/utils.py
++++ b/nonebot_plugin_xiuxian_2/xiuxian/xiuxian_utils/utils.py
+@@ -392,7 +392,7 @@ class Txt2Img:
+             return self.img2b64(out_img)
+ 
+     def save_image_with_compression(self, out_img):
+-        """对传入图片进行压缩"""
++        """对传入图片进行压缩；编码失败时清空缓冲区后降级。"""
+         img_byte_arr = io.BytesIO()
+         compression_quality = max(
+             1, min(100, 100 - XiuConfig().img_compression_limit)
+@@ -414,6 +414,8 @@ class Txt2Img:
+                 out_img.save(img_byte_arr, format="WebP", quality=compression_quality)
+         except:
+             # 尝试降级为 JPEG
++            img_byte_arr.seek(0)
++            img_byte_arr.truncate(0)
+             out_img.save(img_byte_arr, format="JPEG", quality=compression_quality)
+ 
+         img_byte_arr.seek(0)
+diff --git a/nonebot_plugin_xiuxian_2/xiuxian/xiuxian_utils/xiuxian2_handle.py b/nonebot_plugin_xiuxian_2/xiuxian/xiuxian_utils/xiuxian2_handle.py
+index 82a62e2..06e356a 100755
+--- a/nonebot_plugin_xiuxian_2/xiuxian/xiuxian_utils/xiuxian2_handle.py
++++ b/nonebot_plugin_xiuxian_2/xiuxian/xiuxian_utils/xiuxian2_handle.py
+@@ -298,14 +298,13 @@ WHERE last_check_info_time = '0' OR last_check_info_time IS NULL
+         return [row[0] for row in result]
+ 
+     def create_user(self, user_id, *args):
+-        """校验用户是否存在"""
++        """校验用户是否存在；新用户由创建方法提交一次事务。"""
+         cur = self.conn.cursor()
+         sql = f"select * from user_xiuxian WHERE user_id=?"
+         cur.execute(sql, (user_id,))
+         result = cur.fetchone()
+         if not result:
+             self._create_user(user_id, args[0], args[1], args[2], args[3], args[4]) # root, type, power, create_time, user_name
+-            self.conn.commit()
+             welcome_msg = f"欢迎进入修仙世界的，你的灵根为：{args[0]},类型是：{args[1]},你的战力为：{args[2]},当前境界：江湖好手"
+             return True, welcome_msg
+         else:
+@@ -1019,16 +1018,13 @@ WHERE last_check_info_time = '0' OR last_check_info_time IS NULL
+ 
+     def auto_recover_hp(self):
+         """自动回血函数"""
+-        sql = f"SELECT user_id, exp, hp FROM user_xiuxian WHERE hp < exp/2"
+         cur = self.conn.cursor()
+-        users = cur.fetchall()
+-        
+-        for user in users:
+-            user_id, exp, hp = user
+-            sql = f"UPDATE user_xiuxian SET hp=hp + ?*0.001 WHERE user_id=?"
+-            cur.execute(sql, (exp, user_id))
+-        
+-        self.conn.commit()
++        try:
++            # 单条SQL完成既定每分钟修为千分之一的恢复，修正原先未执行SELECT和可能超过满血的问题。
++            cur.execute("UPDATE user_xiuxian SET hp=MIN(exp/2, hp + exp*0.001) WHERE hp < exp/2")
++            self.conn.commit()
++        finally:
++            cur.close()
+     
+     def get_back_msg(self, user_id):
+         """获取用户背包信息"""
+@@ -1315,10 +1311,10 @@ WHERE last_check_info_time = '0' OR last_check_info_time IS NULL
+         self.conn.commit()
+ 
+     def reset_user_drug_resistance(self, user_id):
+-        """重置用户耐药性"""
+-        sql = f"UPDATE back SET all_num=0 where goods_type='丹药' and user_id={user_id}"
++        """按用户参数重置耐药性，避免字符串拼接 SQL。"""
++        sql = "UPDATE back SET all_num=0 where goods_type='丹药' and user_id=?"
+         cur = self.conn.cursor()
+-        cur.execute(sql, )
++        cur.execute(sql, (user_id,))
+         self.conn.commit()
+ 
+     def update_back_j(self, user_id, goods_id, num=1, use_key=0):
+@@ -1341,9 +1337,10 @@ WHERE last_check_info_time = '0' OR last_check_info_time IS NULL
+             all_num = back['all_num']
+         goods_num = back['goods_num'] - num
+         now_time = datetime.now()
+-        sql_str = f"UPDATE back set update_time='{now_time}',action_time='{now_time}',goods_num={goods_num},day_num={day_num},all_num={all_num},bind_num={bind_num} WHERE user_id={user_id} and goods_id={goods_id}"
++        # 参数绑定避免用户与物品编号拼接进 SQL。
++        sql_str = "UPDATE back SET update_time=?,action_time=?,goods_num=?,day_num=?,all_num=?,bind_num=? WHERE user_id=? AND goods_id=?"
+         cur = self.conn.cursor()
+-        cur.execute(sql_str)
++        cur.execute(sql_str, (now_time, now_time, goods_num, day_num, all_num, bind_num, user_id, goods_id))
+         self.conn.commit()
+ 
+ 
+@@ -2273,4 +2270,4 @@ def save_player_info(user_id, data, info_name):
+     save_mode = "w" if os.path.exists(FILEPATH) else "x"
+     with open(FILEPATH, mode=save_mode, encoding="UTF-8") as f:
+         f.write(data)
+-        f.close()
+\ No newline at end of file
++        f.close()

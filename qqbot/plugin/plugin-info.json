@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "id": "xiuxian",
+  "name": "修仙 · 群聊世界",
+  "version": "1.0.0",
+  "description": "修仙2.2完整引擎适配：16个玩法模块、128个指令匹配器、14项原定时任务；C#插件托管独立Python引擎，保留修炼、宗门、秘境、炼丹、坊市、拍卖、灵庄、传承和轮回。安装需要配套QQBot框架。",
+  "author": "QQBot 项目维护者；原作者少姜及上游贡献者",
+  "license": "保留上游MIT原文；上游来源的MIT/GPL元数据差异及图片字体授权记录详见engine/SOURCE-NOTICES.md，不将所有素材统一声明为MIT。",
+  "homepage": "https://github.com/tangboys/QQBot-Xiuxian",
+  "entryFile": "QQBot.Plugins.Xiuxian.Plugin.dll"
+}
