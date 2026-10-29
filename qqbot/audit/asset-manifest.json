@@ -1,0 +1,1106 @@
+[
+  {
+    "path": "data/xiuxian/boss_img/九寒.png",
+    "size": 212985,
+    "sha256": "238116327038cbfe601fb208850b092904d7196ae8d3b0ca759c8a0d1ddb00c3",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/boss_img/九寒_c.png",
+    "size": 112603,
+    "sha256": "0462cc5ae39ac5a2009c26f877f787b0d3dd237e7400ae910f50ae2082bf2d43",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/boss_img/以向.png",
+    "size": 200911,
+    "sha256": "2339091480e3b5da6c1857cc4b6e7b6c321391a29e3b2781f61e2a1669593466",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/boss_img/以向_c.png",
+    "size": 207122,
+    "sha256": "6d767192a1e61127654d1e752d1f6a2786932ba0796b385b4af7580e46ec3823",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/boss_img/卫起.png",
+    "size": 195510,
+    "sha256": "e153a769883d82a0aaf83a52b842d757408845812926a1184c9fed21f22b0b88",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/boss_img/卫起_c.png",
+    "size": 212801,
+    "sha256": "1db07b78861abb989bfe6ff13c5173c63f870b995a171c497ad5943ef9f7368c",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/boss_img/历飞雨.png",
+    "size": 1257801,
+    "sha256": "088377b21cb6b1f7c00a933ce430afa8bcb9079a98246a8e2cb18eb848ba67ef",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/boss_img/外道贩卖鬼.png",
+    "size": 494128,
+    "sha256": "cf56ce1db61e40e1eea44441df313acacb6a6529e225a630812ecf8549120232",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/boss_img/少姜.png",
+    "size": 1357714,
+    "sha256": "994902d17b320dde28e43b97dbebe3027c3db6da2ffd731ed2b774ec7988dd5d",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/boss_img/少姜_c.png",
+    "size": 2475906,
+    "sha256": "0de497f00ecfde64c259ba9fd5cf392c878ba95d37665ad7a72f81d93b312c5c",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/boss_img/术方.png",
+    "size": 229873,
+    "sha256": "0563746a557a5a3ea55a67af38bd39a8f69fb07f19810b1049462c27daa2f7ae",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/boss_img/术方_c.png",
+    "size": 158188,
+    "sha256": "53fc1d4d23047be218a38e2388ed79d4ba1c6064a01e343b6078c5e6af17ba90",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/boss_img/砂鲛.png",
+    "size": 242621,
+    "sha256": "728ab165831a9c55b2a156aa048d3a78481b1f9afd157452c586d1a5e0c82c71",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/boss_img/砂鲛_c.png",
+    "size": 209042,
+    "sha256": "5298ab3520cfddbd0026ea5323d41c614e0d3df4e27600b89deb484a5c948fc3",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/boss_img/神风王.png",
+    "size": 250885,
+    "sha256": "21b1452a3830c9592214bf0533148b528893a82f7c7f369824a71082f413edbc",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/boss_img/神风王_c.png",
+    "size": 256908,
+    "sha256": "2bbf26c23d6add4e72877a40751d3d077e6b892321dd6bf490596d4c7e635435",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/boss_img/精卫.png",
+    "size": 1969944,
+    "sha256": "8cabf6941236e176ff9e0bf9ea9d238b1da34b2bd892cd7c26e90f7bb6cf45fa",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/boss_img/精卫_c.png",
+    "size": 143105,
+    "sha256": "1c1313a474d0eb360e2020e7e6b8ac616fc5adcd027b56137b8cf2867828dd20",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/boss_img/莉莉丝.png",
+    "size": 2322314,
+    "sha256": "fe8b5018c6b06e9292b52316826db341a326ce647e252e0a93a4fbdad7715fc0",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/boss_img/莉莉丝_c.png",
+    "size": 165073,
+    "sha256": "f36ee9ac87636af01757babb62b1cfc3362749654d39578dc2d3acd73f0ce261",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/boss_img/莫女.png",
+    "size": 206681,
+    "sha256": "41069abe64876678ed3b4eea8a326a59808a1eb1ca31b4f6ba46342676ed8cad",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/boss_img/莫女_c.png",
+    "size": 175576,
+    "sha256": "60b1dbbed3d3a026c459a2557715dfdda86c5813626eb4c4dd5e41578fafd158",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/boss_img/血枫.png",
+    "size": 322835,
+    "sha256": "209ed7384b7e5c283d6d2366dba249367a9b8b4bfb2ea023a1f376d6cbd42912",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/boss_img/血枫_c.png",
+    "size": 173742,
+    "sha256": "dc6726ee9a56fc4a71e8bd0d19422d0968bd05b4913de6d34c258ba6a4de9f22",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/boss_img/衣以候.png",
+    "size": 231294,
+    "sha256": "3dc3dfeb5fe9319203c09c383387c0faef9cebe813227e1fcec369a2de197a3b",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/boss_img/衣以候_c.png",
+    "size": 219417,
+    "sha256": "812845f0e62f8481dc0a6ef27aa10f9e9e9cbdd343a656210dc26e397731a4b3",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/boss_img/金凰儿.png",
+    "size": 194693,
+    "sha256": "2e5a35d7ee6f85f049e5bc52f21cf40dcceda637b6d9a0f61661f6be775e1513",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/boss_img/金凰儿_c.png",
+    "size": 282137,
+    "sha256": "01a8a6ce46cea325f9216e3a4dba2a1362034c676c0a05c656cba107ebf535af",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/boss_img/陵光.png",
+    "size": 2990164,
+    "sha256": "82660e99f6a472b3b42adde9dbd44a8684539e00194edaa4aa8d57d50b9ee105",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/boss_img/陵光_c.png",
+    "size": 124424,
+    "sha256": "e62234bc7ee9ce7d94101afdbc8c0b406b49a1a0c25feec55c4ef20ae3890dab",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/boss_img/霍德尔.png",
+    "size": 2454064,
+    "sha256": "8df509aef947bdf1b6f5a9527ac034f2e55ff1ebb62ac136ba22c97c26dbc195",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/boss_img/霍德尔_c.png",
+    "size": 124087,
+    "sha256": "eac32f8e54c9abb60c41757f253764f54693550f64a2ba6473290cf288878a4e",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/boss掉落物/boss掉落物.json",
+    "size": 6460,
+    "sha256": "c052f8142477dd1408755d8cccc5b16de06ac7d716312a9afb7784ebfcada56e",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/font/SarasaMonoSC-Bold.ttf",
+    "size": 13603272,
+    "sha256": "89dea319598466498ca4d26ebbb98e189b1799bfb20296f057b2a1c09f106e34",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/font/SourceHanSerifCN-Heavy.otf",
+    "size": 11852212,
+    "sha256": "1c65f799ce2261180d3748a8dd10ef964b69a37b2d9f209f911c72f38385b289",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/image/background.png",
+    "size": 86342,
+    "sha256": "cf9102ab95dee1e7aeff31100cd7257f395c908627d827782f4e6ea1ac22a186",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/image/banner.png",
+    "size": 1137,
+    "sha256": "a24ec90bffad0eda0ab0885d30959c9041b025981f0aef16ba89526c9486d186",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/info_img/back.png",
+    "size": 891117,
+    "sha256": "62dd3fa40dcf94f4788f77f349a0f82c01a9cca6aaedc83a187255d136a1ac91",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/info_img/init.png",
+    "size": 37953,
+    "sha256": "6712b1098001c9a95efb5b7e376f6df4f00518d13e0e57ef9a53c8796de3a6d2",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/info_img/line2.png",
+    "size": 6023,
+    "sha256": "525749a06f72a72388cd02bc45064dfd5b3357e333c1f869e1ce0ebed9923efc",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/info_img/line3.png",
+    "size": 5099,
+    "sha256": "d3c361f75b637a3c27f73d742788e63af7193e74083b67b8b0a92c0e32fb12a2",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/info_img/line4.png",
+    "size": 8137,
+    "sha256": "40c6d884d80482f5abeb2c135ac5630aa6487db02c04be68dd21593485d4c725",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/info_img/user_state.png",
+    "size": 220091,
+    "sha256": "2611a99b50c604072a763d9e1abab7975ea1af0dad5d1c4680eaad4a4189a020",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/items.json",
+    "size": 232971,
+    "sha256": "8704e3c3bfcb786de695f0dcc010fc1567dfe5e0c9ad6164ad28daf615f5df75",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/jjsp.py",
+    "size": 1366,
+    "sha256": "52ad8cac93786f20e26bcf412e8bf879069cc2487ef7f16feefec38ffe8e7ee6",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/work/暗杀.json",
+    "size": 17832,
+    "sha256": "6c690995dfa4e2f9b94297e973dc297fde8653c75827e6e821037638003f1e5b",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/work/灵材.json",
+    "size": 16913,
+    "sha256": "af1042f99da8d51b0a1bc51ac0a445e5adcfb3e6ed94a3bfc3146b88b72319fe",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/work/等级奖励稿.json",
+    "size": 7607,
+    "sha256": "d2f0d8a2e3cf1880cbc445e58d558b54c2febea296d832b35cfd3816f6ae863d",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/work/镇妖.json",
+    "size": 17586,
+    "sha256": "901bb28aef6c2e3b1f2c3612611a03645beedb52855c30315bf5eb37d90d0f85",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/xiuxian_version.txt",
+    "size": 11,
+    "sha256": "945f43acf83017e049d0f966b9c64f8f6dd73c294ea03f4413ba23dcd9b4540d",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/丹药/丹药.json",
+    "size": 9056,
+    "sha256": "468fac77469d2861b44b44dc8a57f15477db2ea05643fc0d8db11750f3fbf013",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/丹药/炼丹丹药.json",
+    "size": 25079,
+    "sha256": "85803d94fe5419f97b353d5250f428066399b3a941974ae7b71411a4bf50077d",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/丹药/炼丹炉.json",
+    "size": 692,
+    "sha256": "2ccd26478c3473ab9c90312ed0f93508890a473d79c846a066dbf31f5c53db4a",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/丹药/神物.json",
+    "size": 4270,
+    "sha256": "21f97ce7eb658577d833c8871825f995e1fb5eaa9e052fdf1a7dfd527a5fca19",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/丹药/药材.json",
+    "size": 62115,
+    "sha256": "b9b309d7d4b6520e7efdc09ff678814e8f0bd68ce34704a4ffdd03b201715787",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/修炼物品/聚灵旗.json",
+    "size": 1689,
+    "sha256": "989d7c00126a16067041d88709e8348f57b0d7d2c76eded744cf6fca9b275935",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/功法/主功法.json",
+    "size": 42500,
+    "sha256": "6b76e2ad6ac7b8ba013f092f91dba8adedd42f057b63e59a47feeea7f3d20838",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/功法/功法概率设置.json",
+    "size": 4245,
+    "sha256": "bc036157a9e48d35e9a3711001335d03d22f6bddced5e7bafd61538869f6125d",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/功法/神通.json",
+    "size": 22357,
+    "sha256": "ef91e82e1fe86ebcbdae48b952853e49aca4db4b12a09ab19ca8c9730321152c",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/功法/辅修功法.json",
+    "size": 8377,
+    "sha256": "03307b12f6867d2d5fc40e6309c20a724b267f13d1e016b58887e14ce5c1ac97",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/丁香.webp",
+    "size": 83880,
+    "sha256": "c657ee557e5da75be8fd6b8266fc5ca5f1d55032dd6b4e38b1e5ba0766a34e48",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/三色堇.webp",
+    "size": 115378,
+    "sha256": "1a48da22650727daaa2c2dc9deb866eaf15c504af4a765f1a2078372344c8669",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/仙客.webp",
+    "size": 99384,
+    "sha256": "a7b10751b7f77534ee9891315e7f6d6b217c75b6dd8725b01d9d907bfaeb3990",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/凤梨.webp",
+    "size": 101778,
+    "sha256": "38219f37e560e4e81739a00e05e54a2e10dc8991fb8d69795d57c2418b20adbf",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/卡萨布兰卡.webp",
+    "size": 114418,
+    "sha256": "d8ec6909995caec265e912d2094aaeb6f95e3a8fffd210ccc2af1bd9b009f646",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/向日葵.webp",
+    "size": 128734,
+    "sha256": "10969a21141242650170de3c67f0bb6fc81732ba4fc23b226b7dda9f0e0823cf",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/大岩酮.webp",
+    "size": 110528,
+    "sha256": "bfdc8fc05016e0eef4682cdfa067e06d3b5d17d100d7ea545282a116995948ac",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/大理.webp",
+    "size": 120312,
+    "sha256": "a673b5fe81d8333e4d83619dbf904e16fb4338b51be2aed9cb063983f0846117",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/天竺葵.webp",
+    "size": 118278,
+    "sha256": "db59bcd4b6bb6838a659e4ce0986b5d405cc08f406065ff5ffb3d82eb810fcbb",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/密蒙.webp",
+    "size": 123320,
+    "sha256": "1349ebf93043480b0c824c3138ac74626192b2c57eeb877f938fb4d03f90d799",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/小苍兰.webp",
+    "size": 101490,
+    "sha256": "d0b115cfc846bd1a45ae5dc41a10b453ab4729bdaff590c577488e2ba72627b5",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/山樱.webp",
+    "size": 115584,
+    "sha256": "3fbb43539223ae5222e5b6e96e2670730479ad309b16baac4a3040a5c3bb964c",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/山茶.webp",
+    "size": 95878,
+    "sha256": "9458c71434fe4a1a099f7acb44ea40c145c82e8876c48bd583e74a6f7b6a6792",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/彩叶草.webp",
+    "size": 133568,
+    "sha256": "9b71cc59fc3719084bff449eae4a6ded143524ad115ab816a1130dedc4c9ef5c",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/时钟.webp",
+    "size": 109760,
+    "sha256": "172325309967960dcee8f2a3551635dc08cba3dbc7be8d927aea2b0ffba70396",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/木棉.webp",
+    "size": 145768,
+    "sha256": "a59c707f3ab2d12bbb57f7e2733d7bbcafe66586e67e66addf03ab222fc23b51",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/松虫草.webp",
+    "size": 113176,
+    "sha256": "ad5ab35628fce41de63448d902e18edf5ec5c535089e3ae5a09c4d62cb6584eb",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/樱.webp",
+    "size": 145188,
+    "sha256": "07b011f92f501d86f0fdd0cfb4aec83b212350d862aa741439bd1e3d4d0cb224",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/水仙.webp",
+    "size": 132104,
+    "sha256": "b80d52db425260e6146114673913ccca1ee90f9581d0c9114f77254b203f7ba4",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/油桐.webp",
+    "size": 132642,
+    "sha256": "eafa7d25fd38d3972f0a7cf9763fb7c3e434a6c9535f5db7d8d55043ad1ab278",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/波斯菊.webp",
+    "size": 140330,
+    "sha256": "352b38fe1be5fe3002d17a439c50b16b66e48fa96770476d258b1e23abf01f9d",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/海宇.webp",
+    "size": 111028,
+    "sha256": "aef1f7cf51b11e468d8a9ebd7555224b5a54fa617d27ba4c953ae77066e150c8",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/火百合.webp",
+    "size": 146080,
+    "sha256": "e680e6a9d9eedce2b62420e4efecd1cea52abaa37ef544ccd54ac827a2a62527",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/牡丹.webp",
+    "size": 112594,
+    "sha256": "246f3269483a09fa6832f59e292232989665f9afdd06d1c55ef3462386130d3d",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/玉簪.webp",
+    "size": 131342,
+    "sha256": "e192420751adbe5026e3049447b97dd0058543a48c177a40dcd9b1e6e85a379c",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/画屏春-似霞.webp",
+    "size": 108654,
+    "sha256": "b2568dc0b0eea0d274700e1e2ed260bd262dea533e42e6da532fe4129dc66b4d",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/画屏春-佳人.webp",
+    "size": 109012,
+    "sha256": "87d1cfdfad7b1aeaa8dc1ff7671597af2e3f3d0b707aebc5e2b8be4fd4277be9",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/画屏春-佳色.webp",
+    "size": 112302,
+    "sha256": "4e5db9f0d7cf4aa716e2fa389c06017648440c64589c9ba16f0413d0cc333533",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/画屏春-倒影.webp",
+    "size": 103290,
+    "sha256": "745c6c9f8eb2f22b6a5535fb1e08f6329c7da261249b0e8b0bf48e0919154158",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/画屏春-倾杯.webp",
+    "size": 104490,
+    "sha256": "db80b8c1099330d7dd2b868713dc30f89dad9a3f2bb3023728d1d6a4e76ad2e9",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/画屏春-兰舟.webp",
+    "size": 122366,
+    "sha256": "e9c6d15da532b8589cdf8826cdc37a051ee526c3aa13525318c3e1b32bd4155e",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/画屏春-啼鹃.webp",
+    "size": 95768,
+    "sha256": "bbc7f9bd91aaf5a4e1d9cbc9ee9074805daf74cd597696ce437b425f1c81894d",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/画屏春-回眸.webp",
+    "size": 92246,
+    "sha256": "2e0957328a5ebd6cadb496635c3e427a46a6d7889c51cc6e74d6be2ada0638e8",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/画屏春-国香.webp",
+    "size": 100240,
+    "sha256": "8f3169c0b7438e3f01c944e1474a7ca127f38e7f4c18f79b4a37d9c888e0f4d0",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/画屏春-无暇.webp",
+    "size": 125554,
+    "sha256": "47912906987c166fa02a9b63c4f17e7cd71d9679178250a3cf06b30a9b45747f",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/画屏春-早春.webp",
+    "size": 114316,
+    "sha256": "82a97b7a482979b1bf9ebb1e0610da3bc59c4905f90db00f233ce2acfba0e28c",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/画屏春-早樱.webp",
+    "size": 115150,
+    "sha256": "bbc15980e1d07b33ee5eb90f5189296377267a193c11fa56f19681ebd53f97a9",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/画屏春-时令.webp",
+    "size": 116026,
+    "sha256": "bf51d4149867143bd838e28dacbd5960d901a5f69e8a95b7faa832e3f772614a",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/画屏春-春晴.webp",
+    "size": 107580,
+    "sha256": "ba8071cf382875c5fcf20975f2a38476550a07535e59691b5c9c790480fd0044",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/画屏春-春水.webp",
+    "size": 102128,
+    "sha256": "9bf9e306ed5a7b96bc4f92ea2bcba91d9baabb02e00c003c6d86faa9378be725",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/画屏春-晶莹.webp",
+    "size": 113966,
+    "sha256": "1f95244873f89e253f2750b9a2e24ed4324f605067307b4ad5180751c830e84a",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/画屏春-暗香.webp",
+    "size": 108010,
+    "sha256": "4242c14586c935fff3a6303bdcfd69e9ac27146b64a7c25b41a38c03cde9d1d7",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/画屏春-樱柔.webp",
+    "size": 117124,
+    "sha256": "1fd79b82acb95248e992937b8c863cc65f468ee4a71158775670339ec81df24f",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/画屏春-樱浮.webp",
+    "size": 100662,
+    "sha256": "c8ddad835e25e4c80e0acf2542d4a97bedf8fd3c7231fe072ff8b7c8deead5f6",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/画屏春-沉沦.webp",
+    "size": 113590,
+    "sha256": "fc332315c7647d706a70e9104fc888a9f1525d8f33262b6a900c7a57a3a4e1e0",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/画屏春-满桂.webp",
+    "size": 103852,
+    "sha256": "ac9cdd269c59340d533549508b67b4a722ab0bc66cd7a57c2dc0d7e95d227bf1",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/画屏春-灵动.webp",
+    "size": 103816,
+    "sha256": "878f3de961ac3a384bd071a437ff0f6b5268682f81d2bfe5f9ebd28595df8e3e",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/画屏春-瑰丽.webp",
+    "size": 105078,
+    "sha256": "5147e99643f2f262f0569021a4072ff4fc1a07304c29ff976945113ffa20fe51",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/画屏春-瑶花.webp",
+    "size": 113064,
+    "sha256": "2dfe5b8a9a5e0e02bc42e21cd8318ca9d52e96cb00cac2d6e6300e8368ea5cef",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/画屏春-生息.webp",
+    "size": 111430,
+    "sha256": "cc410855df30cd19eaa5b48b017538a34c1e4af51a990e10769e7c0319831dc0",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/画屏春-皇女.webp",
+    "size": 82858,
+    "sha256": "6514384f6e8799d579b8ab7d9d9e9f09745ed16257900da8f137ed3ae078479a",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/画屏春-眷念.webp",
+    "size": 102950,
+    "sha256": "5e2b1e10480678bae0d6a626c3172501c535595fc8ad8e4bfddaa369214c3808",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/画屏春-秋霁.webp",
+    "size": 114752,
+    "sha256": "2b381d51f0d609c7ead23ac632da21423904d1077f12e76f66446668430f757e",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/画屏春-繁星.webp",
+    "size": 130808,
+    "sha256": "8a82322acea8e1326c648eb65a1120202249f60aa898a62adfd7207516f0b079",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/画屏春-繁月.webp",
+    "size": 115280,
+    "sha256": "c1a4dca885b6ad05b18a2c97ac2237534c347e38c7334a24d790afa3dee5bff5",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/画屏春-缚灵.webp",
+    "size": 103744,
+    "sha256": "ddd5430cdd6824535faf87a4bad65717d30178c15326f39f92a774587b22c0eb",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/画屏春-花临.webp",
+    "size": 105888,
+    "sha256": "4781a9c08138ccd94439b39492beccea8e4e2a5e0a851b16728a64ec28eff381",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/画屏春-花蕊.webp",
+    "size": 106568,
+    "sha256": "f6bf7985b38a10d23aa5895620e878b970dfd35046d0df422d32ae09376a1fca",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/画屏春-苍翠.webp",
+    "size": 106004,
+    "sha256": "54e3dd38a59afc5af5256de9737decb5da00cb5b0283c81ef43a39be56f7e0ab",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/画屏春-荧惑.webp",
+    "size": 120858,
+    "sha256": "7f010628ddd90a4ad54918d53b05cff1d08379ba18bb93b2ff422f452ec19950",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/画屏春-葱茏.webp",
+    "size": 120652,
+    "sha256": "f10c700f8b184ce53dece863cad358849d3126412d6b1abdd3ac4b66bc760554",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/画屏春-蝶桂.webp",
+    "size": 104356,
+    "sha256": "1f42af748e280bd770a82f02ee79d004d3f4285d3e14047a9bd887bfc8bad3d3",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/画屏春-解红.webp",
+    "size": 107518,
+    "sha256": "b0341acd565d363e806867d66cc1f2245742811ac127c4581e34600c973ca966",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/画屏春-赛金.webp",
+    "size": 116218,
+    "sha256": "db42705713f654b6beaa43d4cac703d96bcbd1ad8922207314c83ec2c9b529ec",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/画屏春-踏樱.webp",
+    "size": 102720,
+    "sha256": "bfb2af55c1be3f5f3b2b9cd15a7e83e3ac2b0f27eb2c54afdd276baa77170f31",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/画屏春-迷花.webp",
+    "size": 104154,
+    "sha256": "2eae74c320a60745c2f5a68fb455e138fbdcb3a869fc11c0f692bb5e6624581a",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/画屏春-邀舞.webp",
+    "size": 91582,
+    "sha256": "a396642284727d6b4d96a624d983e7e8da0e39a9729eba4370a28f4a014a2804",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/画屏春-采桑.webp",
+    "size": 111860,
+    "sha256": "921515ce3ad939bd60e99388efe908fa50d019b28229777dc079b04b743e38d5",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/画屏春-雨润.webp",
+    "size": 110694,
+    "sha256": "87c6a68138579c6542cf5aa8a493a9ecc0efd7121e785320b3072e732be0e6ad",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/画屏春-霎那.webp",
+    "size": 95044,
+    "sha256": "316cc039ca028ed00891c7bc7ca9344e7b2948c07302bba9a661309b4773a40b",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/画屏春-风信.webp",
+    "size": 108588,
+    "sha256": "fbedbf2b10764bf341ef44d76cc6257f105605d15a1949be6bf04a198e32e256",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/画屏春-风息.webp",
+    "size": 112908,
+    "sha256": "e52ad4f37f2b468995625a18039508fb33f2c8e6aa81dbfe3bc1d5d2d11b5b10",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/画屏春-风语.webp",
+    "size": 108972,
+    "sha256": "0696970bef793da34cacd2f66cffded3b026ec9e65e18b389735567c59c0fafd",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/白日菊.webp",
+    "size": 117840,
+    "sha256": "d737159380e08890d11ce13b794c92ade2528fd6c9037d7a83dd836fb544c0f5",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/白玫瑰.webp",
+    "size": 113098,
+    "sha256": "473cdc67e5e39a58e2cc7aa2d8ded677255580e9e9fbcaa01e002c4b2d8d5fb8",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/百合.webp",
+    "size": 135008,
+    "sha256": "cd921f1bb2fb5a6ca95a3996750dbfd43adb49c278acfd46f270dac6c15d9543",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/百慕达奶油.webp",
+    "size": 129776,
+    "sha256": "ee4ac80cde142ef9e686e131e9101bcb593aefe1dcefe2f1f02010e432a7ffeb",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/矢车菊.webp",
+    "size": 125208,
+    "sha256": "b4641e40d07321aba53f14676f7879fc68ebd58e619d81fe2af634eed813cbaa",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/粉红蔷薇.webp",
+    "size": 91428,
+    "sha256": "bf4f9922f5db97e9bca644dc9141f11b11a3ca2e3e43a43356abe791bd049c43",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/粉蔷薇.webp",
+    "size": 131562,
+    "sha256": "41df7ff977b39f66a71027b235a34a4ac79bcc1750c8762b3ef2c6bf6db8d04f",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/紫云英.webp",
+    "size": 121122,
+    "sha256": "45d0615f4ffe1e9796967d7c0bc495c17d0fd083e02974b8f7fefdabdefd6aee",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/紫玫瑰.webp",
+    "size": 116142,
+    "sha256": "d36651773f4300276153224fdb00e6775f04fe23c44be81fdec523a9b956a9ca",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/紫罗兰.webp",
+    "size": 110106,
+    "sha256": "e35d20e2e84d1e6ed5aa66d744d956c3c9e3ac89965531fcf95db07d74a9a4a4",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/红掌.webp",
+    "size": 117418,
+    "sha256": "6237a57d37f98b5afd5bc7c7be5ed3a3b5b5b08959009231bf415be311b42a86",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/红玫瑰.webp",
+    "size": 116420,
+    "sha256": "aaaa3b1df9ed12f546fac4001024b38e6b2bf155d21a0906a629764b9c726a1d",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/红蔷薇.webp",
+    "size": 120262,
+    "sha256": "6f8cc12d6f82002b1d3d431ca0e6cb1ded3c751c1aed6d797699e61dba4f95da",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/翠菊.webp",
+    "size": 101700,
+    "sha256": "2d6d69545ccfd36d5f0a28c2421fd89a17c7ecb5c41e1a634e3e5ad25733843d",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/芍药.webp",
+    "size": 110062,
+    "sha256": "a2b6eaea13d4588f1241026f098cd4327c7349e6cee2e5d753334b83f19a0652",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/芙蓉.webp",
+    "size": 138804,
+    "sha256": "e386eab647d8bb34f6b483ea048b765360e2b7997e81201ba00f23a5b577c490",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/花园温室.webp",
+    "size": 123178,
+    "sha256": "905ff3ee9896053a6d123f8a07fbcb30fd04d78063b5de6284a882bffc39954c",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/花园百花.webp",
+    "size": 138674,
+    "sha256": "af12b9d5c87c7b5319249fb58a382d3ae882046f292a0be33cc178a692001f86",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/荀麻.webp",
+    "size": 124322,
+    "sha256": "fc3046646b965adc9a40d53814c2e3b2f6d8bcb3f69c212cb2e0e1dec4506569",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/莲.webp",
+    "size": 124002,
+    "sha256": "4aadb5d639b8e81d20e61911c562bf8f0a3053473a728fe8322419eb5da40f57",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/菊.webp",
+    "size": 139326,
+    "sha256": "f086f06cc90912b0cad2f43e59b255adbba695a1889111b302c7e54bbc1ba540",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/蒲公英.webp",
+    "size": 139720,
+    "sha256": "56331b231ad3d85edefdfa64f50d09446b004f58944fb1c19ca552f0117a448c",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/蓍草.webp",
+    "size": 141614,
+    "sha256": "54fb98f983ddd48b659e3ef941bf75c27be9bb8d89a9e0a44d170e15828572ad",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/蓝蔷薇.webp",
+    "size": 136464,
+    "sha256": "ead6af2edbdc6ea346f01658b873462539196c6f4eac2810a7e6bdf6c94aef26",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/蝴蝶兰.webp",
+    "size": 138466,
+    "sha256": "c4292f1d7e975bbb7d6655d067c3fe7abcb00087b40f8e6718d8247c930bb23f",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/连翘.webp",
+    "size": 97524,
+    "sha256": "3a2d25d6f55a1097d72aba9edf4d2374b5a79b78d4dc956dc5a04874197d7ac2",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/迷迭香.webp",
+    "size": 139716,
+    "sha256": "b21a57c3e190ab62227c08c5c8d16133c5dc2632dee8b6c2ab402e344f1bfef6",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/郁金香.webp",
+    "size": 130886,
+    "sha256": "44d8fc7d7f491c9a5d0fcb033e5d7a9150262786b8baa904fb6cc81e3d341fb4",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/野蔷薇.webp",
+    "size": 119674,
+    "sha256": "b56709036d398ae6c06fef3250d6eed8a23e1a64381ddde9a98611497df3ebcc",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/金凤.webp",
+    "size": 125106,
+    "sha256": "f9104165b16d91ccb7b36f5381d9d250a08c220c5563af8c088a3df3cbba0659",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/金达莱.webp",
+    "size": 129852,
+    "sha256": "2a97289ce2ef1cee719569b398b6a189f7a41662878db6fb22a47a51c9778199",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/金鱼草.webp",
+    "size": 102914,
+    "sha256": "ac77d3f0925870eaedee079790892f5aa80b36964ae214e80631bb2fcf7072e9",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/铃兰.webp",
+    "size": 118748,
+    "sha256": "036ccf4c7d3f30be041b34706c59af2d5d3541c39f783548db4ba11ebc326f12",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/雪莲.webp",
+    "size": 126586,
+    "sha256": "9c688b75187a5a67fd91bb2a4e0baa77f1d8a6a923b009ffb86752447662d4f2",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/风信子.webp",
+    "size": 99740,
+    "sha256": "21abba2cf2e2b930ffdd874d88115b660e6c4016c87991a8c516dcb4a7b02c67",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/风铃草.webp",
+    "size": 99978,
+    "sha256": "50b296bd1502c0dff0f262ff95d77eca39e1c01fbb6c9fafc08c688e8e86f4a1",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/香水百合.webp",
+    "size": 128678,
+    "sha256": "0e3581d08c6b5dd05c15c1ad96d699e43cafd18b3094796cc464e1fe4bd825d6",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/鸢尾.webp",
+    "size": 118818,
+    "sha256": "00d1c6f38d67c7cf1f38803545645cfd531747aac75012789009f9d755707cbc",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/麦秆菊.webp",
+    "size": 136386,
+    "sha256": "beb363fb9f86737b23a6efb20ddac77539540592a63884c45866896c1aadb53a",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/黄玫瑰.webp",
+    "size": 102548,
+    "sha256": "2b49c1912ba3c52d114de201a6d6bbf95d67883ff418e1633fff70fdbdc3a41a",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/黄菊.webp",
+    "size": 128804,
+    "sha256": "bd9662ec803106078630744623fdfe1cde8935abdf7cb6d009957ab58c5f6654",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/黄蔷薇.webp",
+    "size": 138722,
+    "sha256": "baeca7eecd8210dbd6120d56160c8439555c58dabd29aaadf481e016947f0ef2",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/卡图/龙胆.webp",
+    "size": 116394,
+    "sha256": "bad9aec358d6cb08413ddc9ba3c348a90eaa06782ea9f4bc8dee643e607eaf81",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/境界.json",
+    "size": 16473,
+    "sha256": "ab21c908223135a507710f936554f871483172eeecd863250a976e1a4dca739e",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/宗门玩法配置.json",
+    "size": 523,
+    "sha256": "746d97529a2833230e0544a30951003c272c5b9143f8418f509554f33e2daaac",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/灵根.json",
+    "size": 2732,
+    "sha256": "45bb6fd5a58ebf5234b620b36250d1b1b507fe8f6cab0b9a915dc528db0c8e93",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/炼体境界.json",
+    "size": 5867,
+    "sha256": "a7b4309e2f0fe7f86e41f279c96033492c4c2bb8d4dcf4f03656e1008b512b1b",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/礼包/礼包.json",
+    "size": 1152,
+    "sha256": "7f1821c8cef56b125a079ce56fdd44664c7fb7b20065d81d1a32b8f5dcd212a0",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/突破概率.json",
+    "size": 1592,
+    "sha256": "02e5fe0bb6766a66beae64f87d67fc23576b497f72d6b9a601b2c04708fd1550",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/装备/法器.json",
+    "size": 20746,
+    "sha256": "19f2b79e5facb7db8521ac83175946f98d0d4987fb321e23bed059c471457ce3",
+    "license": "unknown; upstream asset provenance not independently verified"
+  },
+  {
+    "path": "data/xiuxian/装备/防具.json",
+    "size": 8278,
+    "sha256": "b89ccf84ed16612b3c16d29980a87ad2b2deab086b98bf93d49f54c3e6d189c5",
+    "license": "unknown; upstream asset provenance not independently verified"
+  }
+]

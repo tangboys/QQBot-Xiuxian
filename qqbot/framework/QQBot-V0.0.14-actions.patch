@@ -1,0 +1,652 @@
+--- a/src/QQBot.Abstractions/Contracts.cs
++++ b/src/QQBot.Abstractions/Contracts.cs
+@@ -63,6 +63,8 @@
+ /// <summary>提供一次插件回调可用的发送、鉴权、日志及后台回复入口。</summary>
+ public interface IPluginContext
+ {
++    /// <summary>在有效回调内申请受控后台动作通道；旧宿主明确拒绝。</summary>
++    IPluginActionChannel OpenOneBotActionChannel() => throw new NotSupportedException("当前宿主不支持后台 OneBot 动作。");
+     IMessageSender Messages { get; }
+     /// <summary>使用宿主启动时的管理员配置鉴权；旧实现默认拒绝，不从群主身份推断。</summary>
+     bool IsAdministrator(long userId) => false;
+@@ -73,11 +75,29 @@
+     void Log(string message);
+ }
+ 
++/// <summary>调用 OneBot 动作，返回成功回执的 data，不暴露凭据。</summary>
++public interface IOneBotActionClient
++{
++    /// <summary>调用指定动作并返回独立持有的 JSON 数据。</summary>
++    Task<JsonElement> CallAsync(string action, JsonElement parameters, CancellationToken cancellationToken = default);
++}
++
++/// <summary>受生命周期及实时开关约束的后台动作通道。</summary>
++public interface IPluginActionChannel : IOneBotActionClient
++{
++    /// <summary>宿主配置的管理员只读快照，供业务引擎识别管理员。</summary>
++    IReadOnlyCollection<long> AdministratorIds { get; }
++    /// <summary>停止或隔离时撤销后台权限。</summary>
++    CancellationToken Stopping { get; }
++    /// <summary>重新核对全局及指定群开关。</summary>
++    Task EnsureActiveAsync(long? groupId = null, CancellationToken cancellationToken = default);
++}
++
+ /// <summary>定义插件元数据及生命周期回调；实现需提供公共无参构造，同一实例的回调串行执行。</summary>
+ public interface IBotPlugin
+ {
+     PluginMetadata Metadata { get; }
+-    /// <summary>宿主发现插件后初始化资源；该回调不受业务开关控制。</summary>
++    /// <summary>宿主发现插件后初始化资源；可申请后台通道，但登记状态前不得启动业务动作，该回调不受业务开关控制。</summary>
+     ValueTask OnLoadAsync(IPluginContext context, CancellationToken cancellationToken) => ValueTask.CompletedTask;
+     /// <summary>处理一条通过开关检查的消息，耗时操作应传递取消令牌。</summary>
+     ValueTask OnMessageAsync(BotMessage message, IPluginContext context, CancellationToken cancellationToken);
+--- a/src/QQBot.Core/PluginRuntime.cs
++++ b/src/QQBot.Core/PluginRuntime.cs
+@@ -11,8 +11,8 @@
+ }
+ 
+ /// <summary>为一个插件实例绑定发送器、日志和超时边界，持有本次进程内的隔离状态。</summary>
+-public sealed class PluginRuntime(IBotPlugin plugin, IMessageSender sender, ILogger logger, TimeSpan timeout,
+-    IReadOnlyCollection<long>? administratorIds = null, SqliteStateStore? states = null)
++public sealed partial class PluginRuntime(IBotPlugin plugin, IMessageSender sender, ILogger logger, TimeSpan timeout,
++    IReadOnlyCollection<long>? administratorIds = null, SqliteStateStore? states = null, IOneBotActionClient? actionClient = null)
+ {
+     private readonly HashSet<long> _administrators = administratorIds?.ToHashSet() ?? [];
+     private readonly SqliteStateStore? _states = states;
+@@ -53,7 +53,7 @@
+         }
+         var parentRegistration = ct.Register(() => { _ = RequestCancellation(); });
+         var context = new PluginContext(new ScopedSender(sender, token), logger, Metadata.Id, _administrators,
+-            userId => OpenPrivateReplyChannel(userId, token));
++            userId => OpenPrivateReplyChannel(userId, token), () => OpenActionChannel(token));
+         // 用任务边界约束插件返回 ValueTask 前的同步阻塞或异常。
+         var task = Task.Run(async () => { token.ThrowIfCancellationRequested(); await action(context, token); }, CancellationToken.None);
+         try
+@@ -132,8 +132,10 @@
+ 
+     /// <summary>为本次调用提供受约束的发送器及带插件 ID 的日志入口。</summary>
+     private sealed record PluginContext(IMessageSender Messages, ILogger Logger, string Id, IReadOnlySet<long> Administrators,
+-        Func<long, IPrivateReplyChannel> OpenChannel) : IPluginContext
+-    {
++        Func<long, IPrivateReplyChannel> OpenChannel, Func<IPluginActionChannel> OpenAction) : IPluginContext
++    {
++        /// <summary>在当前回调内申请后台动作通道。</summary>
++        public IPluginActionChannel OpenOneBotActionChannel() => OpenAction();
+         /// <summary>仅承认宿主提供的管理员快照，插件无需读取包含 token 的宿主配置。</summary>
+         public bool IsAdministrator(long userId) => Administrators.Contains(userId);
+         /// <summary>只在有效回调内申请后台通道；通道自身绑定用户和插件生命周期。</summary>
+--- /dev/null
++++ b/src/QQBot.Core/PluginRuntime.Actions.cs
+@@ -0,0 +1,194 @@
++using System.Globalization;
++using System.Text.Json;
++using QQBot.Abstractions;
++
++namespace QQBot.Core;
++
++/// <summary>提供插件后台动作的权限边界。</summary>
++public sealed partial class PluginRuntime
++{
++    private readonly object _actionChannelLock = new();
++    private ActionChannel? _actionChannel;
++
++    /// <summary>仅在有效回调内签发通道，缺少状态存储或动作传输时拒绝。</summary>
++    private IPluginActionChannel OpenActionChannel(CancellationToken invocation)
++    {
++        invocation.ThrowIfCancellationRequested();
++        _backgroundStopping.Token.ThrowIfCancellationRequested();
++        if (_states is null) throw new NotSupportedException("后台动作需要插件状态存储。");
++        lock (_actionChannelLock)
++        {
++            invocation.ThrowIfCancellationRequested();
++            _backgroundStopping.Token.ThrowIfCancellationRequested();
++            return _actionChannel ??= new ActionChannel(this, actionClient ?? sender as IOneBotActionClient
++                ?? throw new NotSupportedException("当前发送器不支持 OneBot 动作。"));
++        }
++    }
++
++    /// <summary>对后台动作实施白名单、目标检查、开关复核。</summary>
++    private sealed class ActionChannel(PluginRuntime owner, IOneBotActionClient inner) : IPluginActionChannel
++    {
++        private readonly SemaphoreSlim _gate = new(1, 1);
++        private readonly SemaphoreSlim _slots = new(8, 8);
++        /// <summary>在停止或隔离时取消后台工作。</summary>
++        public CancellationToken Stopping => owner._backgroundStopping.Token;
++        /// <summary>提供不可修改的真实管理员配置快照。</summary>
++        public IReadOnlyCollection<long> AdministratorIds { get; } = Array.AsReadOnly(owner._administrators.ToArray());
++
++        /// <summary>每次从数据库核对真实开关；停机与隔离取消所有动作。</summary>
++        public async Task EnsureActiveAsync(long? groupId = null, CancellationToken cancellationToken = default)
++        {
++            if (groupId is <= 0) throw new ArgumentOutOfRangeException(nameof(groupId));
++            using var linked = CancellationTokenSource.CreateLinkedTokenSource(Stopping, cancellationToken);
++            linked.Token.ThrowIfCancellationRequested();
++            if (!(await owner._states!.GetAsync(owner.Metadata.Id, groupId, linked.Token)).EffectiveEnabled)
++                throw new OperationCanceledException("插件全局或目标群已关闭。", linked.Token);
++            linked.Token.ThrowIfCancellationRequested();
++        }
++
++        /// <summary>串行动作并在发送前复核权限，不提供消息查询、撤回或管理动作。</summary>
++        public async Task<JsonElement> CallAsync(string action, JsonElement parameters, CancellationToken cancellationToken = default)
++        {
++            cancellationToken.ThrowIfCancellationRequested();
++            Stopping.ThrowIfCancellationRequested();
++            // 每个运行实例最多保留八个进行中或排队动作，重复申请通道不能扩大额度。
++            if (!_slots.Wait(0, cancellationToken)) throw new InvalidOperationException("后台动作队列已满。");
++            try
++            {
++                using var linked = CancellationTokenSource.CreateLinkedTokenSource(Stopping, cancellationToken);
++                linked.CancelAfter(TimeSpan.FromSeconds(30));
++                var ct = linked.Token;
++                await _gate.WaitAsync(ct);
++                try
++                {
++                    if (parameters.ValueKind != JsonValueKind.Object || parameters.GetRawText().Length > 8 * 1024 * 1024)
++                        throw new ArgumentException("动作参数必须为有界 JSON 对象。");
++                    var allowed = action switch
++                    {
++                        "send_group_msg" => "group_id,message,auto_escape",
++                        "send_private_msg" => "user_id,message,auto_escape",
++                        "send_group_forward_msg" => "group_id,messages",
++                        "send_private_forward_msg" => "user_id,messages",
++                        "get_group_list" or "get_login_info" => "no_cache",
++                        "get_group_member_info" => "group_id,user_id,no_cache",
++                        "get_stranger_info" => "user_id,no_cache",
++                        _ => throw new NotSupportedException("插件动作不在允许清单中。")
++                    };
++                    var keys = allowed.Split(',');
++                    ValidateProperties(parameters, keys);
++                    foreach (var flag in new[] { "auto_escape", "no_cache" })
++                        if (parameters.TryGetProperty(flag, out var value) && value.ValueKind is not (JsonValueKind.True or JsonValueKind.False))
++                            throw new ArgumentException("动作布尔参数无效。");
++                    long? group = parameters.TryGetProperty("group_id", out _) ? ReadId(parameters, "group_id", true) : null;
++                    if (action.Contains("group", StringComparison.Ordinal) && action != "get_group_list" && group is null)
++                        throw new ArgumentException("群动作缺少目标群。");
++                    if (keys.Contains("user_id")) _ = ReadId(parameters, "user_id", true);
++                    if (action.StartsWith("send_", StringComparison.Ordinal))
++                    {
++                        var field = action.Contains("forward", StringComparison.Ordinal) ? "messages" : "message";
++                        if (!parameters.TryGetProperty(field, out var content) || content.ValueKind is not (JsonValueKind.Array or JsonValueKind.String))
++                            throw new ArgumentException("发送动作缺少消息内容。");
++                        var safe = parameters.EnumerateObject().ToDictionary(p => p.Name, p => (object)p.Value);
++                        safe[field] = NormalizeContent(content, field == "messages", 0);
++                        parameters = JsonSerializer.SerializeToElement(safe);
++                        if (parameters.GetRawText().Length > 8 * 1024 * 1024) throw new ArgumentException("规范化消息超出参数大小限制。");
++                    }
++                    await EnsureActiveAsync(group, ct);
++                    var result = await inner.CallAsync(action, parameters, ct);
++                    if (action == "get_group_list")
++                    {
++                        if (result.ValueKind != JsonValueKind.Array) throw new InvalidDataException("群列表回执无效。");
++                        var visible = new List<JsonElement>();
++                        foreach (var item in result.EnumerateArray())
++                            if ((await owner._states!.GetAsync(owner.Metadata.Id, ReadId(item, "group_id", true), ct)).EffectiveEnabled) visible.Add(item);
++                        await EnsureActiveAsync(null, ct);
++                        return JsonSerializer.SerializeToElement(visible);
++                    }
++                    return result;
++                }
++                finally { _gate.Release(); }
++            }
++            finally { _slots.Release(); }
++        }
++
++        /// <summary>限制消息段及字段，所有层级的字符串都转为文本段，禁止 CQ 指令、本地文件和已有消息引用。</summary>
++        private static object NormalizeContent(JsonElement content, bool nodes, int depth)
++        {
++            if (depth > 12) throw new ArgumentException("消息嵌套过深。");
++            if (content.ValueKind == JsonValueKind.String)
++            {
++                if (nodes) throw new ArgumentException("转发必须使用内联节点。");
++                return new[] { new { type = "text", data = new { text = content.GetString() } } };
++            }
++            if (content.ValueKind != JsonValueKind.Array) throw new ArgumentException("消息段格式无效。");
++            var result = new List<object>();
++            bool? nodeSegments = null;
++            foreach (var segment in content.EnumerateArray())
++            {
++                ValidateProperties(segment, "type", "data");
++                var type = segment.GetProperty("type").GetString();
++                var data = segment.GetProperty("data");
++                if (nodes && type != "node") throw new ArgumentException("转发必须使用内联节点。");
++                if (nodeSegments is { } previous && previous != (type == "node")) throw new ArgumentException("转发节点不能和普通消息段混用。");
++                nodeSegments = type == "node";
++                switch (type)
++                {
++                    case "text":
++                        ValidateProperties(data, "text");
++                        if (data.GetProperty("text").ValueKind != JsonValueKind.String) throw new ArgumentException("文本段格式无效。");
++                        break;
++                    case "at":
++                        ValidateProperties(data, "qq");
++                        var qq = data.GetProperty("qq");
++                        if (qq.ValueKind != JsonValueKind.String || qq.GetString() != "all") _ = ReadId(data, "qq", true);
++                        break;
++                    case "image":
++                        // 保留官方适配器随图片附带的标准选项，不接受其他媒体或路径字段。
++                        ValidateProperties(data, "file", "type", "cache", "proxy", "timeout");
++                        var file = data.GetProperty("file").GetString() ?? "";
++                        if (!file.StartsWith("base64://", StringComparison.Ordinal) &&
++                            !(Uri.TryCreate(file, UriKind.Absolute, out var uri) && uri.Scheme is "http" or "https"))
++                            throw new ArgumentException("图片必须为内存图片或 HTTP 地址。");
++                        break;
++                    case "node":
++                        ValidateProperties(data, "user_id", "uin", "nickname", "name", "content");
++                        var modernId = data.TryGetProperty("user_id", out _);
++                        var modernName = data.TryGetProperty("nickname", out _);
++                        if (modernId && data.TryGetProperty("uin", out _) || modernName && data.TryGetProperty("name", out _))
++                            throw new ArgumentException("转发节点身份字段重复。");
++                        var userId = ReadId(data, modernId ? "user_id" : "uin", true);
++                        var name = data.GetProperty(modernName ? "nickname" : "name");
++                        if (name.ValueKind != JsonValueKind.String || string.IsNullOrWhiteSpace(name.GetString()))
++                            throw new ArgumentException("转发节点昵称无效。");
++                        // 接受上游别名，统一按 OneBot 标准字段传给 NapCat。
++                        result.Add(new { type = "node", data = new { user_id = userId, nickname = name.GetString(),
++                            content = NormalizeContent(data.GetProperty("content"), false, depth + 1) } });
++                        continue;
++                    default: throw new ArgumentException("消息段类型不在允许清单中。");
++                }
++                result.Add(segment);
++            }
++            return result;
++        }
++
++        /// <summary>拒绝未知及重复字段，避免宿主验证的结构与协议端实际解析的结构不一致。</summary>
++        private static void ValidateProperties(JsonElement value, params string[] allowed)
++        {
++            if (value.ValueKind != JsonValueKind.Object) throw new ArgumentException("动作或消息段必须为 JSON 对象。");
++            var seen = new HashSet<string>(StringComparer.Ordinal);
++            foreach (var property in value.EnumerateObject())
++                if (!allowed.Contains(property.Name, StringComparer.Ordinal) || !seen.Add(property.Name))
++                    throw new ArgumentException("动作或消息段包含未允许或重复的字段。");
++        }
++
++        /// <summary>接受平台常见的数字或十进制字符串 ID，目标账号与群必须为正数。</summary>
++        private static long ReadId(JsonElement value, string name, bool positive)
++        {
++            if (!value.TryGetProperty(name, out var id) ||
++                !(id.ValueKind == JsonValueKind.Number ? id.TryGetInt64(out var number) : long.TryParse(id.ValueKind == JsonValueKind.String ? id.GetString() : null,
++                    NumberStyles.None, CultureInfo.InvariantCulture, out number)) ||
++                (positive && number <= 0)) throw new ArgumentException("动作目标 ID 无效。");
++            return number;
++        }
++    }
++}
+--- a/src/QQBot.Adapter.OneBot11/OneBotHttpClient.cs
++++ b/src/QQBot.Adapter.OneBot11/OneBotHttpClient.cs
+@@ -15,7 +15,7 @@
+ }
+ 
+ /// <summary>为发送契约绑定 HTTP 连接和 OneBot 服务地址及鉴权选项。</summary>
+-public sealed class OneBotHttpClient(HttpClient http, OneBotOptions options) : IMessageSender
++public sealed partial class OneBotHttpClient(HttpClient http, OneBotOptions options) : IMessageSender, IOneBotActionClient
+ {
+     private const int MaximumResponseBytes = 64 * 1024;
+ 
+@@ -67,9 +67,9 @@
+     }
+ 
+     /// <summary>分块读取最多64KiB解压后回执，直接解析UTF-8并限制JSON深度，不复制完整字符串或回显正文。</summary>
+-    private static async Task<JsonDocument> ReadResponseAsync(HttpResponseMessage response, CancellationToken ct)
++    private static async Task<JsonDocument> ReadResponseAsync(HttpResponseMessage response, CancellationToken ct, int maximumBytes = MaximumResponseBytes, int maximumDepth = 16)
+     {
+-        if (response.Content.Headers.ContentEncoding.Count == 0 && response.Content.Headers.ContentLength > MaximumResponseBytes)
++        if (response.Content.Headers.ContentEncoding.Count == 0 && response.Content.Headers.ContentLength > maximumBytes)
+             throw new InvalidDataException("OneBot response size limit exceeded.");
+         await using var raw = await response.Content.ReadAsStreamAsync(ct);
+         await using var decoded = OpenDecodedStream(response.Content.Headers.ContentEncoding, raw);
+@@ -81,7 +81,7 @@
+             int count;
+             while ((count = await input.ReadAsync(buffer.AsMemory(0, 4096), ct)) != 0)
+             {
+-                if (body.Length + count > MaximumResponseBytes)
++                if (body.Length + count > maximumBytes)
+                     throw new InvalidDataException("OneBot response size limit exceeded.");
+                 body.Write(buffer, 0, count);
+             }
+@@ -89,7 +89,7 @@
+             try
+             {
+                 // 文档引用MemoryStream自己的正文数组，不引用即将归还的池缓冲。
+-                return JsonDocument.Parse(body.GetBuffer().AsMemory(0, checked((int)body.Length)), new JsonDocumentOptions { MaxDepth = 16 });
++                return JsonDocument.Parse(body.GetBuffer().AsMemory(0, checked((int)body.Length)), new JsonDocumentOptions { MaxDepth = maximumDepth });
+             }
+             catch (JsonException)
+             {
+--- /dev/null
++++ b/src/QQBot.Adapter.OneBot11/OneBotHttpClient.Actions.cs
+@@ -0,0 +1,30 @@
++using System.Net.Http.Headers;
++using System.Net.Http.Json;
++using System.Text.Json;
++
++namespace QQBot.Adapter.OneBot11;
++
++/// <summary>扩展受控动作传输，保留原普通发送响应限制。</summary>
++public sealed partial class OneBotHttpClient
++{
++    /// <summary>沿用宿主凭据调用动作，限制解压后回执为 2 MiB、JSON 深度 32，不重试。</summary>
++    public async Task<JsonElement> CallAsync(string action, JsonElement parameters, CancellationToken cancellationToken = default)
++    {
++        if (string.IsNullOrEmpty(action) || action.Length > 64 || action.Any(c => !(c is >= 'a' and <= 'z' or '_')))
++            throw new ArgumentException("无效 OneBot 动作。", nameof(action));
++        using var budget = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
++        budget.CancelAfter(options.HttpTimeoutMs);
++        using var request = new HttpRequestMessage(HttpMethod.Post, new Uri(new Uri(options.HttpBaseUrl.TrimEnd('/') + "/"), action));
++        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", options.AccessToken);
++        request.Content = JsonContent.Create(parameters);
++        using var response = await http.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, budget.Token);
++        response.EnsureSuccessStatusCode();
++        using var body = await ReadResponseAsync(response, budget.Token, 2 * 1024 * 1024, 32);
++        var root = body.RootElement;
++        if (root.ValueKind != JsonValueKind.Object) throw new OneBotApiException(action, null);
++        int? retcode = root.TryGetProperty("retcode", out var code) && code.ValueKind == JsonValueKind.Number && code.TryGetInt32(out var number) ? number : null;
++        if (retcode != 0 || !root.TryGetProperty("status", out var status) || status.ValueKind != JsonValueKind.String || status.GetString() != "ok")
++            throw new OneBotApiException(action, retcode);
++        return root.TryGetProperty("data", out var data) ? data.Clone() : JsonSerializer.SerializeToElement<object?>(null);
++    }
++}
+--- a/src/QQBot.PluginLoader/DllPluginCatalog.cs
++++ b/src/QQBot.PluginLoader/DllPluginCatalog.cs
+@@ -7,7 +7,7 @@
+ 
+ /// <summary>维护一次宿主生命周期内成功加载的 DLL 插件及其加载上下文。</summary>
+ public sealed class DllPluginCatalog(IMessageSender sender, ILoggerFactory loggerFactory, BotOptions options,
+-    SqliteStateStore? states = null) : IPluginCatalog, IAsyncDisposable
++    SqliteStateStore? states = null, IOneBotActionClient? actionClient = null) : IPluginCatalog, IAsyncDisposable
+ {
+     private readonly List<PluginRuntime> _plugins = [];
+     private readonly List<PluginLoadContext> _contexts = [];
+@@ -41,7 +41,7 @@
+                     {
+                         var creation = Task.Run(() => new PluginRuntime(
+                             (IBotPlugin)Activator.CreateInstance(type)!, sender, loggerFactory.CreateLogger(type.FullName!),
+-                            TimeSpan.FromMilliseconds(options.PluginTimeoutMs), options.AdminUserIds, states), CancellationToken.None);
++                            TimeSpan.FromMilliseconds(options.PluginTimeoutMs), options.AdminUserIds, states, actionClient), CancellationToken.None);
+                         PluginRuntime runtime;
+                         try { runtime = await creation.WaitAsync(TimeSpan.FromMilliseconds(options.PluginTimeoutMs), ct); }
+                         catch
+--- a/src/QQBot.Host/Program.cs
++++ b/src/QQBot.Host/Program.cs
+@@ -52,6 +52,7 @@
+     return observer.IsEnabled ? new ObservedMessageSender(sender, observer, sp.GetRequiredService<BotOptions>()) : sender;
+ });
+ builder.Services.AddSingleton<DllPluginCatalog>();
++builder.Services.AddTransient<IOneBotActionClient>(sp => (IOneBotActionClient)sp.GetRequiredService<IMessageSender>());
+ builder.Services.AddSingleton<IPluginCatalog>(sp => sp.GetRequiredService<DllPluginCatalog>());
+ builder.Services.AddSingleton<AdminCommands>();
+ builder.Services.AddSingleton<MessageDispatcher>();
+--- a/src/QQBot.Host/ObservedMessageSender.cs
++++ b/src/QQBot.Host/ObservedMessageSender.cs
+@@ -1,11 +1,50 @@
+ using QQBot.Abstractions;
+ using QQBot.Core;
++using System.Text.Json;
+ 
+ namespace QQBot.Host;
+ 
+ /// <summary>装饰原发送器，仅在接口确认成功后向桌面提交短记录，不改变鉴权、发送与重试行为。</summary>
+-internal sealed class ObservedMessageSender(IMessageSender inner, IChatObserver observer, BotOptions options) : IMessageSender
++internal sealed class ObservedMessageSender(IMessageSender inner, IChatObserver observer, BotOptions options) : IMessageSender, IOneBotActionClient
+ {
++    /// <summary>透传动作并记录结构消息的文本或媒体占位，监控故障不影响已完成的发送。</summary>
++    public async Task<JsonElement> CallAsync(string action, JsonElement parameters, CancellationToken cancellationToken = default)
++    {
++        var client = inner as IOneBotActionClient ?? throw new NotSupportedException("发送器不支持 OneBot 动作。");
++        var result = await client.CallAsync(action, parameters, cancellationToken);
++        if (action is "send_group_msg" or "send_private_msg" or "send_group_forward_msg" or "send_private_forward_msg")
++        {
++            try
++            {
++                var group = action is "send_group_msg" or "send_group_forward_msg";
++                var peer = parameters.GetProperty(group ? "group_id" : "user_id");
++                var peerId = peer.ValueKind == JsonValueKind.String ? long.Parse(peer.GetString()!) : peer.GetInt64();
++                var id = result.GetProperty("message_id");
++                var messageId = id.ValueKind == JsonValueKind.String ? long.Parse(id.GetString()!) : id.GetInt64();
++                var content = "[转发消息]";
++                if (parameters.TryGetProperty("message", out var message))
++                {
++                    content = message.ValueKind == JsonValueKind.String ? message.GetString()! : "[结构消息/图片]";
++                    if (message.ValueKind == JsonValueKind.Array)
++                    {
++                        var preview = new System.Text.StringBuilder();
++                        foreach (var segment in message.EnumerateArray())
++                        {
++                            if (preview.Length >= 1024) break;
++                            var type = segment.GetProperty("type").GetString();
++                            var text = type == "text" ? segment.GetProperty("data").GetProperty("text").GetString() ?? "" : type == "image" ? "[图片]" : "[消息段]";
++                            preview.Append(text.AsSpan(0, Math.Min(text.Length, 1024 - preview.Length)));
++                        }
++                        content = preview.ToString();
++                    }
++                }
++                Record(messageId, group ? "group" : "private", peerId, content);
++            }
++            catch (Exception) { /* 成功发送不能因为监控字段异常触发业务重发。 */ }
++        }
++        return result;
++    }
++
+     /// <summary>保留原群文本发送结果，成功后记录一次发出消息，失败不产生成功记录。</summary>
+     public async Task<long> SendGroupAsync(long groupId, string text, CancellationToken cancellationToken = default)
+     {
+--- /dev/null
++++ b/tests/QQBot.Tests/PluginActionTests.cs
+@@ -0,0 +1,217 @@
++using System.Text.Json;
++using Microsoft.Extensions.Logging.Abstractions;
++using QQBot.Abstractions;
++using QQBot.Core;
++using Xunit;
++
++namespace QQBot.Tests;
++
++/// <summary>由用户执行的后台动作权限回归；使用临时数据库和假传输，不连接 QQ 或 Python。</summary>
++public sealed class PluginActionTests : DatabaseTest
++{
++    /// <summary>签发通道后全局关闭仍即时生效，不能借旧通道继续发送。</summary>
++    [Fact]
++    public async Task ExistingChannelRejectsDisabledPlugin()
++    {
++        var (runtime, plugin, transport) = await CreateAsync();
++        try
++        {
++            await Store.SetGroupAsync("action-test", 70001, true);
++            await Store.SetGlobalAsync("action-test", false);
++            await Assert.ThrowsAnyAsync<OperationCanceledException>(() => plugin.Actions!.CallAsync("send_group_msg", JsonSerializer.SerializeToElement(new { group_id = 70001, message = "hello" })));
++            Assert.Equal(0, transport.Calls);
++        }
++        finally { await runtime.ShutdownAsync(CancellationToken.None); }
++    }
++
++    /// <summary>群列表过滤独立停用群，同时保留未配置并继承全局的群。</summary>
++    [Fact]
++    public async Task GroupListFiltersDisabledGroups()
++    {
++        var (runtime, plugin, _) = await CreateAsync();
++        try
++        {
++            await Store.SetGroupAsync("action-test", 70002, false);
++            var result = await plugin.Actions!.CallAsync("get_group_list", JsonSerializer.SerializeToElement(new { }));
++            Assert.Single(result.EnumerateArray());
++            Assert.Equal(70001, result[0].GetProperty("group_id").GetInt64());
++        }
++        finally { await runtime.ShutdownAsync(CancellationToken.None); }
++    }
++
++    /// <summary>通道不开放原插件未使用的管理动作，越权请求不触及传输。</summary>
++    [Fact]
++    public async Task ManagementActionIsRejectedBeforeTransport()
++    {
++        var (runtime, plugin, transport) = await CreateAsync();
++        try
++        {
++            await Assert.ThrowsAsync<NotSupportedException>(() => plugin.Actions!.CallAsync("set_group_ban", JsonSerializer.SerializeToElement(new { group_id = 70001, user_id = 80001 })));
++            Assert.Equal(0, transport.Calls);
++        }
++        finally { await runtime.ShutdownAsync(CancellationToken.None); }
++    }
++
++    /// <summary>本地文件图片明确拒绝，防止后台动作把宿主文件路径交给协议端读取。</summary>
++    [Fact]
++    public async Task LocalImageIsRejectedBeforeTransport()
++    {
++        var (runtime, plugin, transport) = await CreateAsync();
++        try
++        {
++            var parameters = JsonSerializer.SerializeToElement(new { group_id = 70001, message = new[] { new { type = "image", data = new { file = "file:///private.txt" } } } });
++            await Assert.ThrowsAsync<ArgumentException>(() => plugin.Actions!.CallAsync("send_group_msg", parameters));
++            Assert.Equal(0, transport.Calls);
++        }
++        finally { await runtime.ShutdownAsync(CancellationToken.None); }
++    }
++
++    /// <summary>后台通道保留签发时以外的群开关约束。</summary>
++    [Fact]
++    public async Task ExistingChannelRejectsDisabledGroup()
++    {
++        var (runtime, plugin, transport) = await CreateAsync();
++        try
++        {
++            await Store.SetGroupAsync("action-test", 70001, false);
++            await Assert.ThrowsAnyAsync<OperationCanceledException>(() => plugin.Actions!.CallAsync("get_group_member_info",
++                JsonSerializer.SerializeToElement(new { group_id = 70001, user_id = 80001 })));
++            Assert.Equal(0, transport.Calls);
++        }
++        finally { await runtime.ShutdownAsync(CancellationToken.None); }
++    }
++
++    /// <summary>回调结束后不能用保留的上下文签发后台能力，已有通道在停机后也失效。</summary>
++    [Fact]
++    public async Task CompletedContextAndStoppedChannelAreRejected()
++    {
++        var (runtime, plugin, transport) = await CreateAsync();
++        try
++        {
++            Assert.Throws<OperationCanceledException>(() => plugin.Context!.OpenOneBotActionChannel());
++        }
++        finally { await runtime.ShutdownAsync(CancellationToken.None); }
++        await Assert.ThrowsAnyAsync<OperationCanceledException>(() => plugin.Actions!.CallAsync("get_login_info", JsonSerializer.SerializeToElement(new { })));
++        Assert.Equal(0, transport.Calls);
++    }
++
++    /// <summary>转发节点中的原始字符串也只作为文本发送，不能被协议端再次解析成 CQ 指令。</summary>
++    [Fact]
++    public async Task InlineForwardStringBecomesLiteralText()
++    {
++        var (runtime, plugin, transport) = await CreateAsync();
++        try
++        {
++            const string text = "[CQ:image,file=file:///private.txt]";
++            await plugin.Actions!.CallAsync("send_group_forward_msg", JsonSerializer.SerializeToElement(new
++            {
++                group_id = 70001,
++                messages = new[] { new { type = "node", data = new { name = "Bot", uin = 90001, content = text } } }
++            }));
++            var node = transport.LastParameters.GetProperty("messages")[0].GetProperty("data");
++            Assert.Equal(90001, node.GetProperty("user_id").GetInt64());
++            Assert.Equal("Bot", node.GetProperty("nickname").GetString());
++            var content = node.GetProperty("content");
++            Assert.Equal(JsonValueKind.Array, content.ValueKind);
++            Assert.Equal("text", content[0].GetProperty("type").GetString());
++            Assert.Equal(text, content[0].GetProperty("data").GetProperty("text").GetString());
++        }
++        finally { await runtime.ShutdownAsync(CancellationToken.None); }
++    }
++
++    /// <summary>已有消息引用、未知段及重复图片字段都在网络调用前拒绝。</summary>
++    [Theory]
++    [InlineData("{\"type\":\"node\",\"data\":{\"id\":\"1\"}}")]
++    [InlineData("{\"type\":\"reply\",\"data\":{\"id\":\"1\"}}")]
++    [InlineData("{\"type\":\"image\",\"data\":{\"file\":\"base64://aGVsbG8=\",\"file\":\"https://example.invalid/image.png\"}}")]
++    public async Task UnsafeSegmentIsRejectedBeforeTransport(string segment)
++    {
++        var (runtime, plugin, transport) = await CreateAsync();
++        try
++        {
++            using var parameters = JsonDocument.Parse("{\"group_id\":70001,\"message\":[" + segment + "]}");
++            await Assert.ThrowsAsync<ArgumentException>(() => plugin.Actions!.CallAsync("send_group_msg", parameters.RootElement));
++            Assert.Equal(0, transport.Calls);
++        }
++        finally { await runtime.ShutdownAsync(CancellationToken.None); }
++    }
++
++    /// <summary>重复签发不能扩大每个插件的串行传输及八项队列上限，取消会释放全部等待项。</summary>
++    [Fact]
++    public async Task ReopenedChannelsShareBoundedQueue()
++    {
++        var (runtime, plugin, transport) = await CreateAsync();
++        using var stop = new CancellationTokenSource();
++        var entered = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
++        transport.OnCall = async cancellationToken =>
++        {
++            entered.TrySetResult(true);
++            await Task.Delay(Timeout.Infinite, cancellationToken);
++            return JsonSerializer.SerializeToElement(new { });
++        };
++        var parameters = JsonSerializer.SerializeToElement(new { });
++        var calls = new List<Task<JsonElement>>();
++        try
++        {
++            calls.Add(plugin.Actions!.CallAsync("get_login_info", parameters, stop.Token));
++            await entered.Task.WaitAsync(TimeSpan.FromSeconds(2));
++            for (var i = 0; i < 7; i++) calls.Add(plugin.SecondActions!.CallAsync("get_login_info", parameters, stop.Token));
++            await Assert.ThrowsAsync<InvalidOperationException>(() => plugin.SecondActions!.CallAsync("get_login_info", parameters));
++            Assert.Equal(1, transport.Calls);
++        }
++        finally
++        {
++            stop.Cancel();
++            foreach (var call in calls) await Assert.ThrowsAnyAsync<OperationCanceledException>(() => call);
++            await runtime.ShutdownAsync(CancellationToken.None);
++        }
++    }
++
++    /// <summary>创建可记录并签发真实后台通道的运行实例。</summary>
++    private async Task<(PluginRuntime Runtime, ChannelPlugin Plugin, FakeActions Transport)> CreateAsync()
++    {
++        var plugin = new ChannelPlugin();
++        var transport = new FakeActions();
++        await Store.RegisterAsync(plugin.Metadata);
++        var runtime = new PluginRuntime(plugin, Sender, NullLogger.Instance, TimeSpan.FromSeconds(2), [90001], Store, transport);
++        Assert.True(await runtime.InitializeAsync(CancellationToken.None));
++        return (runtime, plugin, transport);
++    }
++
++    /// <summary>只在合法生命周期内申请通道的最小测试插件。</summary>
++    private sealed class ChannelPlugin : IBotPlugin
++    {
++        public PluginMetadata Metadata { get; } = new("action-test", "action-test", "1.0.0");
++        public IPluginActionChannel? Actions { get; private set; }
++        public IPluginActionChannel? SecondActions { get; private set; }
++        public IPluginContext? Context { get; private set; }
++        /// <summary>在初始化回调中申请通道，供之后检查实时授权。</summary>
++        public ValueTask OnLoadAsync(IPluginContext context, CancellationToken cancellationToken)
++        {
++            Context = context;
++            Actions = context.OpenOneBotActionChannel();
++            SecondActions = context.OpenOneBotActionChannel();
++            return ValueTask.CompletedTask;
++        }
++        /// <summary>本用例不处理业务消息。</summary>
++        public ValueTask OnMessageAsync(BotMessage message, IPluginContext context, CancellationToken cancellationToken) => ValueTask.CompletedTask;
++    }
++
++    /// <summary>只返回合成群列表和消息 ID 的假传输，不调用真实网络。</summary>
++    private sealed class FakeActions : IOneBotActionClient
++    {
++        public int Calls { get; private set; }
++        public JsonElement LastParameters { get; private set; }
++        public Func<CancellationToken, Task<JsonElement>>? OnCall { get; set; }
++        /// <summary>计数后返回独立 JSON，模拟框架成功回执。</summary>
++        public Task<JsonElement> CallAsync(string action, JsonElement parameters, CancellationToken cancellationToken = default)
++        {
++            Calls++;
++            LastParameters = parameters.Clone();
++            if (OnCall is not null) return OnCall(cancellationToken);
++            return Task.FromResult(action == "get_group_list"
++                ? JsonSerializer.SerializeToElement(new[] { new { group_id = 70001 }, new { group_id = 70002 } })
++                : JsonSerializer.SerializeToElement(new { message_id = 1 }));
++        }
++    }
++}

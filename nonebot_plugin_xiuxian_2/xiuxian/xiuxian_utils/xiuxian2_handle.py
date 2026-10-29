@@ -298,14 +298,13 @@ WHERE last_check_info_time = '0' OR last_check_info_time IS NULL
         return [row[0] for row in result]
 
     def create_user(self, user_id, *args):
-        """校验用户是否存在"""
+        """校验用户是否存在；新用户由创建方法提交一次事务。"""
         cur = self.conn.cursor()
         sql = f"select * from user_xiuxian WHERE user_id=?"
         cur.execute(sql, (user_id,))
         result = cur.fetchone()
         if not result:
             self._create_user(user_id, args[0], args[1], args[2], args[3], args[4]) # root, type, power, create_time, user_name
-            self.conn.commit()
             welcome_msg = f"欢迎进入修仙世界的，你的灵根为：{args[0]},类型是：{args[1]},你的战力为：{args[2]},当前境界：江湖好手"
             return True, welcome_msg
         else:
@@ -1019,16 +1018,13 @@ WHERE last_check_info_time = '0' OR last_check_info_time IS NULL
 
     def auto_recover_hp(self):
         """自动回血函数"""
-        sql = f"SELECT user_id, exp, hp FROM user_xiuxian WHERE hp < exp/2"
         cur = self.conn.cursor()
-        users = cur.fetchall()
-        
-        for user in users:
-            user_id, exp, hp = user
-            sql = f"UPDATE user_xiuxian SET hp=hp + ?*0.001 WHERE user_id=?"
-            cur.execute(sql, (exp, user_id))
-        
-        self.conn.commit()
+        try:
+            # 单条SQL完成既定每分钟修为千分之一的恢复，修正原先未执行SELECT和可能超过满血的问题。
+            cur.execute("UPDATE user_xiuxian SET hp=MIN(exp/2, hp + exp*0.001) WHERE hp < exp/2")
+            self.conn.commit()
+        finally:
+            cur.close()
     
     def get_back_msg(self, user_id):
         """获取用户背包信息"""
@@ -1315,10 +1311,10 @@ WHERE last_check_info_time = '0' OR last_check_info_time IS NULL
         self.conn.commit()
 
     def reset_user_drug_resistance(self, user_id):
-        """重置用户耐药性"""
-        sql = f"UPDATE back SET all_num=0 where goods_type='丹药' and user_id={user_id}"
+        """按用户参数重置耐药性，避免字符串拼接 SQL。"""
+        sql = "UPDATE back SET all_num=0 where goods_type='丹药' and user_id=?"
         cur = self.conn.cursor()
-        cur.execute(sql, )
+        cur.execute(sql, (user_id,))
         self.conn.commit()
 
     def update_back_j(self, user_id, goods_id, num=1, use_key=0):
@@ -1341,9 +1337,10 @@ WHERE last_check_info_time = '0' OR last_check_info_time IS NULL
             all_num = back['all_num']
         goods_num = back['goods_num'] - num
         now_time = datetime.now()
-        sql_str = f"UPDATE back set update_time='{now_time}',action_time='{now_time}',goods_num={goods_num},day_num={day_num},all_num={all_num},bind_num={bind_num} WHERE user_id={user_id} and goods_id={goods_id}"
+        # 参数绑定避免用户与物品编号拼接进 SQL。
+        sql_str = "UPDATE back SET update_time=?,action_time=?,goods_num=?,day_num=?,all_num=?,bind_num=? WHERE user_id=? AND goods_id=?"
         cur = self.conn.cursor()
-        cur.execute(sql_str)
+        cur.execute(sql_str, (now_time, now_time, goods_num, day_num, all_num, bind_num, user_id, goods_id))
         self.conn.commit()
 
 

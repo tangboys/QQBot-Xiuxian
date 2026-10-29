@@ -3,7 +3,7 @@ try:
 except ImportError:
     import json
 import os
-from pathlib import Path
+from ..xiuxian_utils.state_paths import persistent_directory
 
 configkey = ["open", "auctions", "拍卖会定时参数"]
 CONFIG = {
@@ -189,7 +189,7 @@ def get_auction_config():
     return config
 
 
-CONFIGJSONPATH = Path(__file__).parent
+CONFIGJSONPATH = persistent_directory(__file__)
 FILEPATH = CONFIGJSONPATH / 'config.json'
 
 

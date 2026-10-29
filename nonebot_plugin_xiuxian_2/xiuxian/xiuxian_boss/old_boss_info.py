@@ -2,18 +2,19 @@ try:
     import ujson as json
 except ImportError:
     import json
-from pathlib import Path
+from ..xiuxian_utils.state_paths import persistent_directory
 import os
 
 
 class OLD_BOSS_INFO(object):
     def __init__(self):
-        self.dir_path = Path(__file__).parent
+        """从持久目录读取或初始化玩法状态，保留升级前数据。"""
+        self.dir_path = persistent_directory(__file__)
         self.data_path = os.path.join(self.dir_path, "boss_info.json")
         try:
             with open(self.data_path, 'r', encoding='utf-8') as f:
                 self.data = json.load(f)
-        except:
+        except FileNotFoundError:
             self.info = {}
             data = json.dumps(self.info, ensure_ascii=False, indent=4)
             with open(self.data_path, mode="x", encoding="UTF-8") as f:

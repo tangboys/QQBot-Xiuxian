@@ -140,6 +140,7 @@ async def set_boss_():
 
 
 async def send_bot(group_id:str):
+    """生成并发送群 Boss，发送失败时检查兜底机器人的群列表。"""
     #初始化
     if not group_id in group_boss:
         group_boss[group_id] = []
@@ -181,7 +182,10 @@ async def send_bot(group_id:str):
             await get_bots()[put_bot[0]].call_api(api, **data)
             
     except:
-        if group_id not in bot.get_group_list():
+        # 获取兜底机器人并等待群列表，按返回字典中的群号匹配。
+        bot = get_bot()
+        groups = await bot.get_group_list()
+        if int(group_id) not in {int(group["group_id"]) for group in groups}:
             logger.opt(colors=True).warning(f"<red>群{group_id}不存在,请检查配置文件!</red>")
             return
         else:

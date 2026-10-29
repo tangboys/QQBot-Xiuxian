@@ -12,7 +12,7 @@ from ..xiuxian_utils.xiuxian2_handle import (
 )
 from datetime import datetime
 import os
-from pathlib import Path
+from ..xiuxian_utils.state_paths import persistent_directory
 from ..xiuxian_config import convert_rank
 
 items = Items()
@@ -614,7 +614,7 @@ def get_shop_data(group_id):
     return data
 
 
-PATH = Path(__file__).parent
+PATH = persistent_directory(__file__)
 FILEPATH = PATH / 'shop.json'
 
 

@@ -3,7 +3,7 @@ try:
 except ImportError:
     import json
 import os
-from pathlib import Path
+from ..xiuxian_utils.state_paths import persistent_directory
 
 configkey = ["Boss灵石", "Boss名字", "Boss倍率", "Boss个数上限", "Boss生成时间参数", 'open', "世界积分商品"]
 CONFIG = {
@@ -163,7 +163,7 @@ def get_boss_config():
     return config
 
 
-CONFIGJSONPATH = Path(__file__).parent
+CONFIGJSONPATH = persistent_directory(__file__)
 FILEPATH = CONFIGJSONPATH / 'config.json'
 
 

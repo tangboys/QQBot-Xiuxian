@@ -3,7 +3,7 @@ try:
 except ImportError:
     import json
 import os
-from pathlib import Path
+from ..xiuxian_utils.state_paths import persistent_directory
 
 
 configkey = [
@@ -245,7 +245,7 @@ def get_config():
     return config
 
 
-CONFIGJSONPATH = Path(__file__).parent
+CONFIGJSONPATH = persistent_directory(__file__)
 FILEPATH = CONFIGJSONPATH / 'config.json'
 
 
